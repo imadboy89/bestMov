@@ -1,3 +1,4 @@
+import Base64 from "./Base64";
 class API{
     constructor(){
         this.error = null;
@@ -40,9 +41,11 @@ class API{
         })
         .then((response) => response.json())
         .then((responseJson) => {
-         this.configs["action_link"]= [];
-         for (let i = 0; i < responseJson["action_link"].length; i++) {
-            this.configs["action_link"].push( atob(responseJson["action_link"][i] ) );
+            console.log(responseJson);
+         this.configs= responseJson;
+         for (let i = 0; i < this.configs["action_link"].length; i++) {
+             console.log(this.configs["action_link"][i]);
+            this.configs["action_link"].push( Base64.atob(this.configs["action_link"][i] ) );
              
          }
          console.log(this.configs);
