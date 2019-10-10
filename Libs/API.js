@@ -7,10 +7,10 @@ class API{
                         "latest","arab"];
         this.pagenation = "?page=[page_nbr]&output_format=json&output_mode=movies_list";
 
-
-        this.proxy = "https://api.codetabs.com/v1/proxy?quest="
+        this.configs = {};
+        this.proxy = "https://api.codetabs.com/v1/proxy?quest=";
         this.usingproxy = false;
-        this.pastbin = 
+        this.config_url   =  "https://raw.githubusercontent.com/imadboy89/bestMov/master/Libs/configs.json"
         this.links_manager = "http://bestmov.byethost16.com/";
         this.links_manager = "http://demoo8.vipserv.org/.index.php";
         this.links_manager = "https://www.oxus.tj/sites/default/private/files/.index.php";
@@ -31,23 +31,21 @@ class API{
         });
     }
     getConfigs(){
-        let data = {};
-        data["api_option"]    = "show_paste";
-        data["api_dev_key"]   = 'aec7393433da976ee057826eb220d005';
-        data["api_user_key"]  = '3b0b9910bca9880167c935c06842fc6f';
-        data["api_paste_key"] = "2hgTjwrQ";
-        let url 			  = 'https://pastebin.com/api/api_raw.php';
-        console.log(data);
+
         let headers = {Accept: 'application/json','Content-Type': 'application/json',}
           
-        return fetch(url,{
-            method: "POST",
-            body: JSON.stringify(data),
+        return fetch(this.config_url,{
+            method: "GET",
             headers: headers
         })
-        .then((response) => response.text())
+        .then((response) => response.json())
         .then((responseJson) => {
-         console.log("success api call",responseJson);
+         this.configs["action_link"]= [];
+         for (let i = 0; i < responseJson["action_link"].length; i++) {
+            this.configs["action_link"].push( atob(responseJson["action_link"][i] ) );
+             
+         }
+         console.log(this.configs);
        })
         .catch(error => {
             console.log("ERROR",error)
