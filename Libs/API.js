@@ -41,14 +41,13 @@ class API{
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-         this.configs= responseJson;
-         for (let i = 0; i < this.configs["action_link"].length; i++) {
-             console.log(this.configs["action_link"][i]);
-            this.configs["action_link"].push( Base64.atob(this.configs["action_link"][i] ) );
-             
-         }
-         console.log(this.configs);
+            this.configs= responseJson;
+            for (let i = 0; i < this.configs["action_link"].length; i++) {
+                this.configs["action_link"][i] =  Base64.atob(this.configs["action_link"][i] );
+            }
+            console.log(this.configs);
+            this.links_manager = ("action_using" in this.configs) ? this.configs["action_link"][this.configs["action_using"]]:this.configs["action_link"][0];
+            console.log(this.links_manager);
        })
         .catch(error => {
             console.log("ERROR",error)
