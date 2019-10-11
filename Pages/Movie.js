@@ -165,7 +165,7 @@ class MovieScreen extends React.Component {
     is_dl   = (dl_link[0]=="/") ? true : false;
     dl_link = (dl_link[0]=="/") ? this.MAPI.API.domain + dl_link : dl_link ;
     if(this.state.movie instanceof Object)
-      this.props.navigation.navigate('WebViewer',{movie_link:dl_link, movie_title:this.state.movie.title,is_dl:is_dl,quality:quality})
+      this.props.navigation.navigate('WebViewer',{movie_link:dl_link, movie_title:this.getparam("title"),is_dl:is_dl,quality:quality})
     
     /*
     this.MAPI.getDlLink(dl_link).then(link=> {
@@ -297,6 +297,9 @@ class MovieScreen extends React.Component {
       }
       if(key=="img") {
         return;
+      }
+      if(key=="title"){
+        value=this.getparam("title");
       }
       return (    
       <View style={styles.row} key={Math.random()}>
