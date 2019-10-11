@@ -283,6 +283,13 @@ class WebViewScreen extends React.Component {
               links_manager : "Not activated",
               movie_dl_link : link
             });
+          }else{
+            this.setState({
+              text_status   : "Error on saving !",
+              wvVisible     : true,
+              links_manager : "",
+              movie_dl_link : ""
+            });
           }
         });
       }else  if (data_[0] == "__status__"){
@@ -360,7 +367,7 @@ class WebViewScreen extends React.Component {
             onPress={()=> Linking.openURL(this.state.movie_dl_link) }
             
           />
-          <ShareBtn title={this.movie_title}link={this.movie_dl_link} disabled={this.state.movie_dl_link==""} />
+          <ShareBtn title={this.movie_title} link={this.state.movie_dl_link} disabled={this.state.movie_dl_link==""} />
           <View style={styles.row_view}>
               <Text style={styles.text_k}> AutoTry  :</Text>
               <View style={styles.text_v}>
