@@ -85,14 +85,12 @@ class SettingsScreen extends React.Component {
         cache_cleared:false,
       };
       this.API = this.props["navigation"].getParam("API");
-      /*
+      
       this.API.getConfigs_local().then( configs=>{
         this.setState({webView_visible : configs.webView_visible,links_manager   : configs.links_manager});
         console.log("start settings");
       });
-      */
-      console.log("start settings",this.API.configs);
-      //this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+      
       
     }
     save(){
