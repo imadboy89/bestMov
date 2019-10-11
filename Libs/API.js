@@ -20,6 +20,11 @@ class API{
     
     saveLink = async (link)=>{
         const links_manager = await this.getConfigs_local("links_manager");
+        if(links_manager=="Not Active"){
+            return (new Promise(function(resolve, reject) {
+                return false;
+              }));
+        }
         link = links_manager+"?action=save&link="+link+"&name="+link.split("/")[link.split("/").length-1];
         return fetch(link,{
             method: "GET",
@@ -49,7 +54,11 @@ class API{
         .then((responseJson) => {
             this.configs= responseJson;
             for (let i = 0; i < this.configs["action_link"].length; i++) {
-                this.configs["action_link"][i] =  Base64.atob(this.configs["action_link"][i] );
+                if(this.configs["action_link"][i]==""){
+                    this.configs["action_link"][i] =  "Not Active";
+                }else{
+                    this.configs["action_link"][i] =  Base64.atob(this.configs["action_link"][i] );
+                }
             }
             this.configs["links_manager"] = ("action_using" in this.configs) ? this.configs["action_link"][this.configs["action_using"]]:this.configs["action_link"][0];
             this.setConfigs();

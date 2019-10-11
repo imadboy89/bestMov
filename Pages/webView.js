@@ -269,14 +269,20 @@ class WebViewScreen extends React.Component {
           if (data.trim()==""){
             this.API_.getConfigs_local("links_manager").then(config_link=>{
               this.setState({
-                text_status   : "Moive Link saved !",
+                text_status   : "Movei Link saved !",
                 wvVisible     : false,
                 links_manager : config_link,
                 movie_dl_link : link
               });
             });
             
-          }else{
+          }else if (data===false){
+            this.setState({
+              text_status   : "Movie link is ready !",
+              wvVisible     : false,
+              links_manager : "Not activated",
+              movie_dl_link : link
+            });
           }
         });
       }else  if (data_[0] == "__status__"){
