@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "best Movies for free",
-    "slug": "bestMov",
+    "name": "best Movies for free 2",
+    "slug": "bestmov2",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -26,7 +26,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "android":{
+    "android": {
       "package": "com.imadboss.bestmovies"
     },
     "description": ""

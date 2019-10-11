@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image  } from 'react-native';
 import MoviesAPI from "../Libs/MoviesAPI"
 import loader from "../Components/Loader"
-import { addOrientationChangeListener } from 'expo/build/ScreenOrientation/ScreenOrientation';
+import header_style from "../Styles/styles";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +34,9 @@ const styles = StyleSheet.create({
     borderWidth : 1,
     textAlign: 'right',
     width:"95%",
-    
+    marginBottom:20,
+    marginTop:10,
+    lineHeight : 40,
   },
   btn_dl: {
     flex: 1, 
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
       color: '#000',
   },
   story_k: {
-    backgroundColor:"#7f8c8d",
+    backgroundColor:"#53634e",
     fontSize: 16,
     fontWeight: 'bold',
     width:"98%",
@@ -76,7 +79,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width:"98%",
     color:"white",
-    textAlign: 'right'
+    textAlign: 'right',
+    lineHeight : 25,
   },
   text_k: {
     backgroundColor:"#34495e",
@@ -138,18 +142,16 @@ class MovieScreen extends React.Component {
     this.props.navigation.setParams({movie_title: "Movie",deleteMovieCache : this.deleteMovieCache });
   }
   static navigationOptions =  ({ navigation  }) => ({
-    headerStyle: {
-      backgroundColor: '#34495e',
-    },
+    headerStyle: header_style.header,
     headerTitle: a=>{
         const {state} = navigation;
-        return (<Text style={{fontSize:18,color:"#e67e22"}}>{navigation.getParam("movie_title")}</Text>)},
+        return (<Text style={header_style.title}>{navigation.getParam("movie_title")}</Text>)},
     headerRight: a=>{
       const {params = {}} = navigation.state;
       return (
         <View>
-          <Button style={{backgroundColor:"#141514"}}
-            color="black"
+          <Icon.Button name="refresh"
+            style={{backgroundColor:"black"}}
             onPress={ () => params.deleteMovieCache() }
             title="reFresh"
           />

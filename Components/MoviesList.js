@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button,View, Text, StyleSheet, Image , FlatList, TouchableHighlight} from 'react-native';
+import { Button,View, Text, StyleSheet, Image , FlatList, TouchableHighlight,AsyncStorage} from 'react-native';
 import { withNavigation } from 'react-navigation';
 import loader from "../Components/Loader"
 import MoviesAPI from "../Libs/MoviesAPI"
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create({
     container: {
         marginTop:20,
@@ -68,58 +68,109 @@ class MovieRow_ extends React.Component {
             };
             this.cat = "";
             this.MAPI = new MoviesAPI();
-            this.MAPI.API.getConfigs();
+            this.MAPI.API = this.props.API;
           }
         getMoviesList(cat){
-            console.log("getMoviesList",cat,this.state.page);
+            const page = (cat[0]=="/")?-1:this.state.page;
+            const cat_page= cat+"_"+page;
+            this.getMoviesList_local(cat_page).then(data => {
+                console.log(data);
+                if(data){
+                    this.setState({"mlist":data});
+                }else{
+                    
+                    this.MAPI.getMovies(cat,page).then(
+                      data=>{
+                        this.setMoviesList_local(cat_page,data);
+                        this.setState({"mlist":data});
+                      }
+                    );
 
-            page = (cat[0]=="/")?-1:this.state.page;
-            this.MAPI.getMovies(cat,page).then(
-              data=>{
-                this.setState({"mlist":data});
-              }
-            );
+                }
+            });
+
           }
-
+        setMoviesList_local(cat,new_data){
+            AsyncStorage.getItem("cat").then(data=>{
+                if(data){
+                    data = JSON.parse(data);
+                    data[cat] = new_data;
+                    AsyncStorage.setItem("cat",JSON.stringify(data) );
+                }else{
+                    data = {cat:new_data};
+                    AsyncStorage.setItem("cat",JSON.stringify(data));
+                }
+                
+            });
+        }
+        getMoviesList_local(cat){
+            return AsyncStorage.getItem("cat").then(data=>{
+                if(data){
+                    data = JSON.parse(data);
+                    console.log(data)
+                    if(cat in data){
+                        return data[cat] ;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    AsyncStorage.setItem("cat","{}");
+                    return false;
+                }
+            });
+        }
+        emptyMsg(){
+            return (
+                <Text style={{height:600,color:"white"}} >There is no Results for  [{this.q}] .</Text>
+            );
+        }
         render() {
             if(this.cat != this.props.cat){
-                this.state.mlist = [];
+                this.state.mlist = false;
                 this.state.page = 1;
                 this.getMoviesList(this.props.cat);
                 this.cat = this.props.cat;
             }
-            
-            let moviesList = (this.state.mlist.length==0) ? loader : (
-                <FlatList
-                        data={this.state.mlist}
-                        renderItem={({ item }) => <MovieRow
-                        movie={item}
-                        />}
-                    />
-            );
+            let moviesList=null;
+            if (this.state.mlist===false){
+                moviesList = loader;
+            }else if(this.state.mlist.length==0){
+                moviesList = this.emptyMsg(); 
+            }else if(this.state.mlist.length>0){
+                moviesList = (
+                    <FlatList
+                            data={this.state.mlist}
+                            renderItem={({ item }) => <MovieRow
+                            movie={item}
+                            />}
+                        />
+                );
+            }
             return (
-                <View style={{backgroundColor:"black"}}>
+                <View  style={{backgroundColor:"black"}}>
 
                     {moviesList}
                     <Text>  </Text>
 
-                <View>
-                    <Button
-                        style={{width:30,height:30}}
+                <View style={{flex: 1,flexDirection:"row",justifyContent: 'center',marginBottom: 36}}>
+                    <Icon.Button name="chevron-left"
+                        style={{backgroundColor:"green"}}
                         title="<"
-                        disabled={this.state.page<=1 || this.state.mlist.length==0}
+                        disabled={this.state.page<=1 || this.state.mlist.length==0 || this.state.mlist==false}
                         onPress={o => {
                         this.state.page -= 1;
-                        this.setState({"mlist":[]});
+                        this.setState({"mlist":false});
                         this.getMoviesList(this.props.cat);
                         }}
                     />
-                    <Button
+                    <Text style={{width:30,color:"yellow",textAlign:"center",fontSize:14}}>{this.state.page}</Text>
+                    <Icon.Button name="chevron-right"
                         title=">"
-                        disabled={this.state.mlist.length==0}
+                        style={{backgroundColor:"green"}}
+                        disabled={this.state.mlist.length==0 || this.state.mlist==false}
                         onPress={o => {
                             this.state.page += 1;
-                            this.setState({"mlist":[]});
+                            this.setState({"mlist":false});
                             this.getMoviesList(this.props.cat);
                         }}
                     /> 

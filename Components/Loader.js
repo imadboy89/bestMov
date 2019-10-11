@@ -3,13 +3,11 @@ import { StyleSheet, ActivityIndicator, View  } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
-    height:800,
+    height:600,
   },
   horizontal: {
     //flexDirection: 'row',
-    height:"100%",
     justifyContent: 'space-around',
     padding: 10
   }

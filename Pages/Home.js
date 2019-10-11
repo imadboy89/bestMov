@@ -2,7 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Image,TextInput,ScrollView,Modal } from 'react-native';
 import MoviesListview from "../Components/MoviesList"
 import MenuDrawer from 'react-native-side-drawer'
-
+import API from "../Libs/API"
+import header_style from "../Styles/styles";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 class HomeScreen extends React.Component {
@@ -39,6 +41,8 @@ class HomeScreen extends React.Component {
       {'name':'War','uri':'movies/war',},
       ]
       this.q = "";
+      this.API = new API();
+      this.API.getConfigs();
   }
 
   drawerContent = () => {
@@ -64,34 +68,46 @@ class HomeScreen extends React.Component {
   openModal = () => {
     this.setState({modalVisible:true});
   };
+  openSettings = () => {
+    this.props.navigation.navigate('Settings',{API:this.API});
+  };
   componentDidMount(){
     this.props.navigation.setParams({
       cat: this.state.cat,
-      toggleOpen : this.toggleOpen,
+      toggleOpen  : this.toggleOpen,
       openModal   : this.openModal,
+      openSettings: this.openSettings,
      })
   }
   static navigationOptions =  ({ navigation  }) => ({
-    headerStyle: {
-      backgroundColor: '#34495e',
-    },
+    headerStyle: header_style.header,
     headerTitle: a=>{
-        const {state} = navigation;
-        return (<Text style={{fontSize:25,color:"#e67e22"}}>{navigation.getParam("cat")}</Text>)},
-    headerRight: a=>{
       const {params = {}} = navigation.state;
       return (
         <View style={{flex:1,flexDirection:"row"}}>
-          <Button style={{backgroundColor:"#141514"}}
+          <Icon.Button name="reorder"
             onPress={ () => params.toggleOpen() }
-            title="Open"
+            title="Menu"
           />
-          <Button style={{backgroundColor:"#141514"}}
-            color="black"
+          <Icon.Button  name ="wrench"
+            style={{backgroundColor:"black"}}
+            iconStyle={{padding:0,margin:0,paddingRight:-2}}
+            onPress={ () => params.openSettings() }
+            title="Settings"
+          />
+          <Text style={header_style.title_home}>{navigation.getParam("cat")}</Text>
+        </View>
+      )
+      },
+    headerRight: a=>{
+      const {params = {}} = navigation.state;
+      return (
+          <Icon.Button
+            style={{backgroundColor:"black"}}
+            name = "search"
             onPress={ () => params.openModal() }
             title="Search"
           />
-        </View>
       )
       },
   });
@@ -132,14 +148,16 @@ class HomeScreen extends React.Component {
             opacity={0.4}
             >
           </MenuDrawer>
-          <ScrollView>
-            <MoviesListview cat={this.state.cat} style={{backgroundColor:"black"}} ></MoviesListview>
+          
+          <ScrollView >
+            <MoviesListview API={this.API} cat={this.state.cat} style={{backgroundColor:"black"}} ></MoviesListview>
           </ScrollView>
         </View>
       );
     }
   
 }
+
 
 const styles = StyleSheet.create({
   container: {

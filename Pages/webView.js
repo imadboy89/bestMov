@@ -1,17 +1,109 @@
 import React from 'react';
-import {  Linking ,WebView ,StyleSheet, View,Text,Button  } from 'react-native';
-import MoviesAPI from "../Libs/MoviesAPI"
+import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch  } from 'react-native';
 import API from "../Libs/API"
+import header_style from '../Styles/styles';
+import ShareBtn from "../Components/share";
+import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create(
     {
       container: {
         flex: 1,
+        backgroundColor:"black"
       },
       WebViewStyle:{
+        
+      },
+      hidderStyle:{
         flex:1,
-      }
+        marginBottom:500,
+
+      },
+      WebViewStyle_hidden:{
+        width:1,
+        height:1,
+      },
+      text_status:{
+        backgroundColor:"black",
+        color:"white",
+        lineHeight:30,
+        fontSize:18
+      },
+      text_k: {
+        //backgroundColor:"#34495e",
+        fontSize: 16,
+        fontWeight: 'bold',
+        width:"30%",
+        color:"white",
+        textAlign: 'right'
+      },
+      text_v: {
+        //backgroundColor:"#34495e",
+        marginLeft:20,
+        fontSize: 14,
+        fontWeight: 'bold',
+        width:"65%",
+        color:"white",
+        textAlign: 'left'
+      },
+      row_view : {
+        flex: 1, 
+        flexDirection: 'row' ,
+        //alignItems: 'flex-start',
+        alignItems: 'center',
+        height : 30 ,
+        marginRight:20,
+        marginLeft:20,
+        marginBottom:10,
+        marginTop:20,
+        borderStyle : "solid",
+        borderWidth : 1,
+        textAlign: 'right',
+        width:"95%",
+        backgroundColor:"#34495e"
+      },
     });
 
+    class WebView_ads extends React.Component {
+      constructor(props) {
+          super(props);
+          this.state = {
+            output:"walo",
+            url:this.props.url
+          };
+        }
+        _onNavigationStateChange(webview){
+          console.log("webviewADS ",webview.url);
+        }
+        render(){
+          try {
+            this.webView.ref.reload();  
+          } catch (error) {
+            
+          }
+          
+          return (
+            <WebView 
+            style={{}}
+            source={{ uri: this.state.url }}
+            onNavigationStateChange={this._onNavigationStateChange.bind(this)}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}            
+            ref={c => {
+            this.WebView = c;
+            }}
+            onLoad={
+              e => {
+                // Update the state so url changes could be detected by React and we could load the mainUrl.
+                this.state.url = e.nativeEvent.url;
+              }
+            }
+            userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+            />
+  
+          );
+        }
+      }
+          
 class WebViewScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -28,11 +120,22 @@ class WebViewScreen extends React.Component {
           output:"walo",
           movie_link :this.url,
           movie_title:this.movie_title,
-          wvVisible : true
+          wvVisible : true,
+          links_manager :"",
+          text_status:"Start",
+          autoRetry :false,
+          WebView_ads_url:"http://google.com",
+          webView_visible:true,
+          movie_dl_link :""
         };
-        console.log(this.movie_title,this.state.movie_title);
+        
         //this.fullScreenCmd = '$(".vjs-mute-control").click();alert($(".vjs-mute-control").text());'
         this.API_ =  new API() ;
+        this.API_.getConfigs_local().then(values=>{
+          this.state.webView_visible = values["webView_visible"];
+          this.state.links_manager   = values["links_manager"];
+        });
+        
         let savelink = this.API_.links_manager +"?action=save&link=[movie_link]&name="+this.movie_title;
         this.injectedJS = `
         /*
@@ -41,7 +144,27 @@ class WebViewScreen extends React.Component {
             event.returnValue = "Can be Ads, don't leave!";
           }
         };
-        */
+        
+       window.open = function(url){
+         let openInfo = {};
+         openInfo["url"] = url;
+         openInfo["host"] = document.location.host;
+         openInfo["href"] = document.location.href;
+        window.postMessage(JSON.stringify(openInfo) ); 
+       }
+       */
+      let autoRetry = 1;
+        document.addEventListener("message", function(data) {
+          const data_ = data.data.split("=");
+          if(data_[0]=="autoRetry"){
+            autoRetry=parseInt(data_[1]);
+            log(data.data);
+            if($("a h1.error").length && autoRetry==1
+            ){
+              $("a h1.error").click();
+            }
+          }
+        });
         let quality = "`+this.quality+`".trim();
         
         function log(data){
@@ -69,16 +192,22 @@ class WebViewScreen extends React.Component {
           }else if($("a.bigbutton").length){
             let dl_link = $("a.bigbutton").attr("href") ;
             log("_dl_="+dl_link);
-            /*
             document.open();
             document.write("saving .. pls wait !");
             document.close();
-            */
+            
           }
         }
         $(function(){
+          setTimeout(function() { 
+            if($("a h1.error").length){
+              if(autoRetry==1){
+                $("a h1.error").click();
+              }
+              log("__status__=Blocked By -vidStream-");
+            }
+          }, 2000);
 
-          //log("open Dev hhh");
           
           setTimeout(function() { 
             GoToVids(); 
@@ -93,7 +222,7 @@ class WebViewScreen extends React.Component {
           "vidstream.to",
           "*.egybest.*",
         ] ;
-        
+        this.originWhitelist = ["*"];
         this.updt_count = 2;
     }
 
@@ -106,99 +235,170 @@ class WebViewScreen extends React.Component {
        })
     }
     static navigationOptions =  ({ navigation  }) => ({
+      headerStyle: header_style.header,
       headerTitle: a=>{
-          const {state} = navigation;
-          return (<Text>{state.params.movie_title}</Text>)},
-      headerRight: a=>{
+        const {state} = navigation;
+        return (<Text style={header_style.title}>{state.params.movie_title}</Text>)
+        },
+        headerRight: a=>{
         const {state} = navigation;
         return (
-          <View style={{flex:1,flexDirection:"row"}}>
-        <Button style={{backgroundColor:"#141514"}}
-          color="black"
-          onPress={o => {
-            Linking.openURL(state.params.movie_link);
-          }}
-          title="Open"
-        />
-        <Button style={{backgroundColor:"black"}}
-          onPress={o => {
-            Linking.openURL(state.params.API.links_manager +"?action=save&link="+ state.params.movie_link+"&name="+state.params.movie_title);
-          }}
-          title="Save"
-        />
+          <View style={header_style.container}>
+            <Icon.Button name="external-link" 
+              onPress={o => {
+                Linking.openURL(state.params.movie_link);
+              }}
+              title="Open"
+            />
+            <Icon.Button name="save" 
+              style={{backgroundColor:"black"}}
+              onPress={o => {
+                Linking.openURL(state.params.API.links_manager +"?action=save&link="+ state.params.movie_link+"&name="+state.params.movie_title);
+              }}
+              title="Save"
+            />
         </View>
         )
         },
     });
     onMessage(data){
-      
-      if (data.nativeEvent.data.slice(0,4) == "_dl_"){
+      const data_ = data.nativeEvent.data.split("=");
+      if (data_[0] == "_dl_"){
         let link = data.nativeEvent.data.slice(5);
         this.API_.saveLink(link).then(data=>{
           if (data.trim()==""){
-            console.log("saved saccessfully");
+            this.API_.getConfigs_local("links_manager").then(config_link=>{
+              this.setState({
+                text_status   : "Moive Link saved !",
+                wvVisible     : false,
+                links_manager : config_link,
+                movie_dl_link : link
+              });
+            });
+            
           }else{
-            console.log(data)
           }
         });
+      }else  if (data_[0] == "__status__"){
+        this.setState({
+          text_status   : data.nativeEvent.data.replace("__status__=",""),
+        });
       }
-      console.log(data.nativeEvent.data);
-    }
-    _onNavigationStateChange(webViewState){
-      console.log("wbv UPDATES",webViewState.url,);
-      /*
-      if( this.updt_count>0  && webViewState.url.split("/")[2]!=" vidstream.to"){
-        //this.WebView.injectJavaScript (this.injectedJS);
-        //this.WebView.injectedJavaScript = this.injectedJS
-        this.updt_count = this.updt_count-1;
-      }else{
-       // this.WebView.injectJavaScript (this.injectedJS_vidstr);
-      }
-      if(this.url.split("/")[2]!=webViewState.url.split("/")[2]){
-        if(webViewState.url.split("/")[2]==" vidstream.to"){
+      else{
+        try {
+          let openInfo = JSON.parse(data.nativeEvent.data);
+          if ("href" in openInfo){
+            //if(openInfo["url"]!=this.WebView_url && openInfo["url"]=="/cv.php"){
+              url_ads = (openInfo["url"][0]=="/") ? "http://"+openInfo["host"]+openInfo["url"] : openInfo["url"];
 
-        }else{
-        //this.WebView.stopLoading();
-        //Linking.openURL(webViewState.url);
-        //this.props.navigation.goBack();
-        //this.WebView.goBack();
+              //this.setState({WebView_ads_url:url_ads})
+              
+              
+            //}
+            //
+          }
+        } catch (error) {
+          
         }
       }
-      */
+    }
+
+    _onNavigationStateChange(webViewState){
+      this.WebView.postMessage("autoRetry="+( (this.state.autoRetry)?1:0 ));
+      console.log("wbv UPDATES",webViewState.url,);
+      this.WebView_url  = webViewState.url;
+      const current_dom = webViewState.url.split("/")[2] ;
+      if(current_dom!=this.state.text_status && !this.state.text_status.includes("Blocked")){
+        this.setState({text_status:webViewState.url.split("/")[2]});
+      }
+      }
+    render_WebView(){
+      
+      return (!this.state.wvVisible) ? null :(
+          <WebView 
+          style={styles.WebViewStyle }
+          source={{ uri: this.state.movie_link }}
+          onNavigationStateChange={this._onNavigationStateChange.bind(this)}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          injectedJavaScript = {this.injectedJS}
+          onMessage={this.onMessage.bind(this)}
+          
+          originWhitelist = {this.originWhitelist}
+          onLoadEnd={a=>{              
+            //this.WebView.injectJavaScript (this.injectedJS);
+            //console.log("Loaded");
+          } }
+          ref={c => {
+            this.WebView = c;
+            //console.log(this.originWhitelist);
+          }}
+          userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+          />
+      );
+    }
+    watch(){
 
     }
+    download(){
+      Linking.openURL(this.state.movie_dl_link);
+    }
+    render_view(){
+      return (
+        <View>
+          <Text style={styles.text_status} style={{fontSize:14}}>Saved list : {this.state.links_manager}</Text>
+          <Button
+            disabled={this.state.movie_dl_link==""}
+            title="Download / watch"
+            color="green"
+            onPress={()=> Linking.openURL(this.state.movie_dl_link) }
+            
+          />
+          <ShareBtn title={this.movie_title}link={this.movie_dl_link} disabled={this.state.movie_dl_link==""} />
+          <View style={styles.row_view}>
+              <Text style={styles.text_k}> AutoTry  :</Text>
+              <View style={styles.text_v}>
+                  <Switch 
+                      style={{width:60,backgroundColor:"#5f363999",height:45}}
+                      value = {this.state.autoRetry}
+                      onValueChange={ (newValue)=> {
+                        console.log("----onValueChange");
+                          this.WebView.postMessage("autoRetry="+( (newValue)?1:0 ));
+                          this.setState({autoRetry: newValue});
+                      }}
+                  />
+              </View>
+          </View>
+          <View style={styles.row_view}>
+              <Text style={styles.text_k}> show webView  :</Text>
+              <View style={styles.text_v}>
+                  <Switch 
+                      style={{width:60,backgroundColor:"#5f363999",height:45}}
+                      value = {this.state.webView_visible}
+                      onValueChange={ (newValue)=> {
+                          this.setState({webView_visible: newValue});
+                      }}
+                  />
+              </View>
+          </View>
+
+        </View>      );
+    }
     render() {
-        
+      let hidder = null;
+        if (this.state.webView_visible==false){
+          hidder = (
+            <View style={styles.hidderStyle}></View>
+          );
+        }
         return (
         <View style={styles.container} >
-            <WebView 
-            visible={this.state.wvVisible}
-            style={styles.WebViewStyle}
-            source={{ uri: this.state.movie_link }}
-            onNavigationStateChange={this._onNavigationStateChange.bind(this)}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            injectedJavaScript = {this.injectedJS}
-            onMessage={this.onMessage}
-//            thirdPartyCookiesEnabled={false}
-            
-            //originWhitelist = {this.originWhitelist}
-            onLoadEnd={a=>{
-              
-              //this.WebView.injectJavaScript (this.injectedJS);
-              //console.log("Loaded");
-            } }
-            
-            ref={c => {
-              this.WebView = c;
-              //console.log(this.originWhitelist);
-            }}
-
-
-            userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
-                      
-
-            />
+          
+          <Text style={styles.text_status}>{this.state.text_status}</Text>
+          {this.render_view()}
+          {hidder}
+          {this.render_WebView()}
+          {/* <WebView_ads url={this.state.WebView_ads_url}/> */}
         </View>
         );
     

@@ -9,8 +9,6 @@ class MoviesAPI{
     
     htmlentities(str){
         try {
-            if (str.includes("bull"))
-                console.log(str);
             let str_ =  String(str).replace(/&amp;/g, '&').replace(/lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
             str_ = str_.replace(/&bull;/g,'').replace(/•/g,'').replace(/&nbsp;/g," ");
 
@@ -105,7 +103,7 @@ class MoviesAPI{
 
                     let movieTable = rootNode.getElementsByClassName("movieTable")[0];
                     
-                    movie["title"] = this.getText(movieTable.getElementsByClassName("movie_title")[0]);
+                    movie["title"] = this.getTextAll(movieTable.getElementsByClassName("movie_title")[0]);
                     //$(".movie_img img").attr("src")
                     movie["img"] = rootNode.getElementsByClassName("movie_img")[0].getElementsByTagName("img")[0].attributes.src;
                     let movie_tr = movieTable.getElementsByTagName("tr");
@@ -185,7 +183,7 @@ class MoviesAPI{
     }
 
     getMovies(cat,page){
-        return this.API.API_get(cat,page).then(
+        return this.API.API_get(cat,page).then( 
             data=>{
                 let movies = [];
                 let rootNode;

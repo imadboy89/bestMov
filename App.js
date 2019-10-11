@@ -3,8 +3,9 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen  from "./Pages/Home";
-import MovieScreen from "./Pages/Movie"
-import WebViewScreen from "./Pages/webView"
+import MovieScreen from "./Pages/Movie";
+import WebViewScreen from "./Pages/webView";
+import SettingsScreen from "./Pages/Settings";
 
 
 
@@ -14,6 +15,7 @@ const AppNavigator = createStackNavigator(
     Home      : HomeScreen,
     Movie     : MovieScreen,
     WebViewer : WebViewScreen,
+    Settings  : SettingsScreen,
   },
   {
     initialRouteName: 'Home',
