@@ -25,7 +25,9 @@ class API{
                 return false;
               }));
         }
-        link = links_manager+"?action=save&link="+link+"&name="+link.split("/")[link.split("/").length-1];
+        const name = link.split("/")[link.split("/").length-1] ;
+        name = name.replace("[EgyBest]","").trim();
+        link = links_manager+"?action=save&link="+link+"&name="+name;
         return fetch(link,{
             method: "GET",
         })
@@ -52,6 +54,7 @@ class API{
         })
         .then((response) => response.json())
         .then((responseJson) => {
+            console.log(responseJson);
             this.configs= responseJson;
             for (let i = 0; i < this.configs["action_link"].length; i++) {
                 if(this.configs["action_link"][i]==""){
@@ -93,6 +96,7 @@ class API{
         }
     };
     getConfigs_local = async (key)=>{
+        console.log("getConfigs_local");
         let configs  = await AsyncStorage.getItem("configs");
         configs = JSON.parse(configs);
         if(key){

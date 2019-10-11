@@ -1,7 +1,6 @@
 import React from 'react';
-import {ToastAndroid, StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Picker,Switch  } from 'react-native';
-import API from "../Libs/API";
-import loader from "../Components/Loader";
+import {ToastAndroid, StyleSheet, Text, View, Button, AsyncStorage,ScrollView ,Picker,Switch  } from 'react-native';
+
 //import { Icon, } from 'react-native-icons';
 const styles = StyleSheet.create({
     container: {
@@ -86,19 +85,16 @@ class SettingsScreen extends React.Component {
         cache_cleared:false,
       };
       this.API = this.props["navigation"].getParam("API");
+      /*
       this.API.getConfigs_local().then( configs=>{
         this.setState({webView_visible : configs.webView_visible,links_manager   : configs.links_manager});
+        console.log("start settings");
       });
-      this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+      */
+      console.log("start settings",this.API.configs);
+      //this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+      
     }
-    //####################### BACK HANDLER ###################################
-    componentWillMount() {BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);}
-    componentWillUnmount() {BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);}
-    handleBackButtonClick() {
-        this.props.navigation.goBack(null);
-      return true;
-    }
-    //##########################################################
     save(){
 
     }
@@ -140,6 +136,7 @@ class SettingsScreen extends React.Component {
     }
     clearCache = async ()=>{
         await AsyncStorage.setItem("movies", JSON.stringify({}) );
+        await AsyncStorage.setItem("cat", JSON.stringify({}) );
         this.setState({cache_cleared:true});
         ToastAndroid.showWithGravity(
             "The cache is cleaded !",
@@ -149,8 +146,9 @@ class SettingsScreen extends React.Component {
     }
     get_API_links(){
         return this.API.configs["action_link"].map( (link,v) =>{
+            const label = (link.split("/").length >2) ? link.split("/")[2] : link ;
             return (
-                <Picker.Item label={link.split("/")[2]} value={link} key={link} />
+                <Picker.Item label={label} value={link} key={link} />
             );
         })
     }

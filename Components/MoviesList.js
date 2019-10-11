@@ -74,7 +74,6 @@ class MovieRow_ extends React.Component {
             const page = (cat[0]=="/")?-1:this.state.page;
             const cat_page= cat+"_"+page;
             this.getMoviesList_local(cat_page).then(data => {
-                console.log(data);
                 if(data){
                     this.setState({"mlist":data});
                 }else{
@@ -107,7 +106,6 @@ class MovieRow_ extends React.Component {
             return AsyncStorage.getItem("cat").then(data=>{
                 if(data){
                     data = JSON.parse(data);
-                    console.log(data)
                     if(cat in data){
                         return data[cat] ;
                     }else{
