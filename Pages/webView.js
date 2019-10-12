@@ -377,7 +377,7 @@ class WebViewScreen extends React.Component {
     render_view(){
       return (
         <View>
-          <Text style={styles.text_status} style={{fontSize:14,color:""white}}>Saved list : {this.state.links_manager}</Text>
+          <Text style={styles.text_status} style={{fontSize:14,color:"white"}}>Saved list : {this.state.links_manager}</Text>
           <Button
             disabled={this.state.movie_dl_link==""}
             title="Download / watch"
