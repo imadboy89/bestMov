@@ -273,7 +273,7 @@ class WebViewScreen extends React.Component {
       const data_ = data.nativeEvent.data.split("=");
       if (data_[0] == "_dl_"){
         let link = data.nativeEvent.data.slice(5);
-          
+          this.setState({ads_url : ""});
           if(this.state.links_manager=="Not Active"){
                 this.setState({
                   text_status: 'Movei Link gotted !',
