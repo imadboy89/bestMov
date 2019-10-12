@@ -289,7 +289,6 @@ class WebViewScreen extends React.Component {
               this.setState({
                 text_status   : "Movei Link saved !",
                 wvVisible     : false,
-                links_manager : config_link,
                 movie_dl_link : link
               });
             });
@@ -305,8 +304,7 @@ class WebViewScreen extends React.Component {
             this.setState({
               text_status   : "Error on saving !",
               wvVisible     : true,
-              links_manager : "",
-              movie_dl_link : ""
+              movie_dl_link : link
             });
           }
         });
