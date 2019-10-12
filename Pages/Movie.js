@@ -298,9 +298,9 @@ class MovieScreen extends React.Component {
         return (   <Button style={styles.btn_dl} 
         key={Math.random()} 
         title="Watch Trailer"
-        color="yellow"
+        color="gray"
         onPress={() => {
-          Linking.openURL(value);
+          Linking.openURL(value+"");
         }} 
          />);
       }
