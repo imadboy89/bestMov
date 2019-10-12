@@ -94,6 +94,13 @@ class MoviesAPI{
             return "";
         }
     }
+    getTrailer(rootNode){
+        try {
+            return rootNode.getElementById("yt_trailer").getElementsByClassName("play")[0].attributes.url;            
+        } catch (error) {
+            return "";
+        }
+    }   
     getMovie(link){
         return this.API.API_get(link,-1).then(
             data=>{
@@ -102,7 +109,8 @@ class MoviesAPI{
                 if (rootNode ){
 
                     let movieTable = rootNode.getElementsByClassName("movieTable")[0];
-                    
+                    movie["trailer"] = this.getTrailer(rootNode);
+
                     movie["title"] = this.getTextAll(movieTable.getElementsByClassName("movie_title")[0]);
                     //$(".movie_img img").attr("src")
                     movie["img"] = rootNode.getElementsByClassName("movie_img")[0].getElementsByTagName("img")[0].attributes.src;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image  } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image,Linking  } from 'react-native';
 import MoviesAPI from "../Libs/MoviesAPI"
 import loader from "../Components/Loader"
 import header_style from "../Styles/styles";
@@ -294,6 +294,15 @@ class MovieScreen extends React.Component {
             <Text style={styles.story_k}>  {key} </Text>
             <Text style={styles.story_v}> {value} </Text>
           </View>);
+      }else if (key=="trailer"){
+        <Button style={styles.btn_dl} 
+        key={Math.random()} 
+        title="Watch Trailer"
+        color="yellow"
+        onPress={() => {
+          Linking.openURL(value);
+        }} 
+         />
       }
       if(key=="img") {
         return;
