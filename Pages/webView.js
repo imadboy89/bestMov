@@ -124,7 +124,7 @@ class WebViewScreen extends React.Component {
           links_manager :"",
           text_status:"Start",
           autoRetry :false,
-          WebView_ads_url:"http://google.com",
+          ads_url:"",
           webView_visible:true,
           movie_dl_link :""
         };
@@ -144,15 +144,24 @@ class WebViewScreen extends React.Component {
             event.returnValue = "Can be Ads, don't leave!";
           }
         };
-        
+        */
+
+         function log(data){
+          try {
+            window.postMessage(data);
+          } catch (error) {
+            alert(" win.po "+error);
+          }
+        }
        window.open = function(url){
          let openInfo = {};
          openInfo["url"] = url;
          openInfo["host"] = document.location.host;
          openInfo["href"] = document.location.href;
-        window.postMessage(JSON.stringify(openInfo) ); 
+        log(JSON.stringify(openInfo) ); 
+        return {"closed":false,close:function(){return true}};
        }
-       */
+       
       let autoRetry = 1;
         document.addEventListener("message", function(data) {
           const data_ = data.data.split("=");
@@ -167,13 +176,7 @@ class WebViewScreen extends React.Component {
         });
         let quality = "`+this.quality+`".trim();
         
-        function log(data){
-          try {
-            window.postMessage(data);
-          } catch (error) {
-            alert(" win.po "+error);
-          }
-        }
+
         function GoToVids(){
           if($(".dls_table td.tar a.g ").length && $($(".dls_table td.tar a.g ")[0]).attr("data-url")){
             $(".dls_table td.tar a.g ").each(function(k,v){
@@ -185,10 +188,11 @@ class WebViewScreen extends React.Component {
            });
           }
         }
+        
         function getlink(){
           if($("a.bigbutton._reload").length){
+            log("trload btn");
             $("a.bigbutton._reload").click();
-            //document.location = "`+savelink+`".replace("[movie_link]","test");
           }else if($("a.bigbutton").length){
             let dl_link = $("a.bigbutton").attr("href") ;
             log("_dl_="+dl_link);
@@ -302,8 +306,9 @@ class WebViewScreen extends React.Component {
           let openInfo = JSON.parse(data.nativeEvent.data);
           if ("href" in openInfo){
             //if(openInfo["url"]!=this.WebView_url && openInfo["url"]=="/cv.php"){
-              url_ads = (openInfo["url"][0]=="/") ? "http://"+openInfo["host"]+openInfo["url"] : openInfo["url"];
-
+              const ads_url = (openInfo["url"][0]=="/") ? "http://"+openInfo["host"]+openInfo["url"] : openInfo["url"];
+              console.log("set state ads",ads_url);
+              this.setState({ads_url:ads_url});
               //this.setState({WebView_ads_url:url_ads})
               
               
@@ -314,6 +319,7 @@ class WebViewScreen extends React.Component {
           
         }
       }
+      console.log(data.nativeEvent.data);
     }
 
     _onNavigationStateChange(webViewState){
@@ -398,6 +404,9 @@ class WebViewScreen extends React.Component {
         </View>      );
     }
     render() {
+      let ads = (this.state.ads_url=="")?null : (
+        <WebView_ads url={this.state.ads_url} />
+      );
       let hidder = null;
         if (this.state.webView_visible==false){
           hidder = (
@@ -410,6 +419,7 @@ class WebViewScreen extends React.Component {
           <Text style={styles.text_status}>{this.state.text_status}</Text>
           {this.render_view()}
           {hidder}
+          {ads}
           {this.render_WebView()}
           {/* <WebView_ads url={this.state.WebView_ads_url}/> */}
         </View>
