@@ -295,14 +295,14 @@ class MovieScreen extends React.Component {
             <Text style={styles.story_v}> {value} </Text>
           </View>);
       }else if (key=="trailer"){
-        <Button style={styles.btn_dl} 
+        return (   <Button style={styles.btn_dl} 
         key={Math.random()} 
         title="Watch Trailer"
         color="yellow"
         onPress={() => {
           Linking.openURL(value);
         }} 
-         />
+         />);
       }
       if(key=="img") {
         return;
