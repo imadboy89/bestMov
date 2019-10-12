@@ -26,7 +26,7 @@ const styles = StyleSheet.create(
         backgroundColor:"black",
         color:"white",
         lineHeight:30,
-        fontSize:18
+        fontSize:14
       },
       text_k: {
         //backgroundColor:"#34495e",
@@ -377,7 +377,7 @@ class WebViewScreen extends React.Component {
     render_view(){
       return (
         <View>
-          <Text style={styles.text_status} style={{fontSize:14,color:"white"}}>Saved list : {this.state.links_manager}</Text>
+          <Text style={styles.text_status} >Saved list : {this.state.links_manager}</Text>
           <Button
             disabled={this.state.movie_dl_link==""}
             title="Download / watch"
