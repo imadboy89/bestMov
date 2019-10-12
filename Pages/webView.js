@@ -135,8 +135,12 @@ class WebViewScreen extends React.Component {
           this.state.webView_visible = values["webView_visible"];
           this.state.links_manager   = values["links_manager"];
         });
-        
-        let savelink = this.API_.links_manager +"?action=save&link=[movie_link]&name="+this.movie_title;
+              
+        this.API_.getConfigs_local("links_manager").then(config_link=>{
+          this.setState({
+            links_manager : config_link,
+          });
+        });
         this.injectedJS = `
         /*
         window.onbeforeunload = function(event) {
@@ -269,6 +273,16 @@ class WebViewScreen extends React.Component {
       const data_ = data.nativeEvent.data.split("=");
       if (data_[0] == "_dl_"){
         let link = data.nativeEvent.data.slice(5);
+          
+          if(this.state.links_manager=="Not Active"){
+                this.setState({
+                  text_status: 'Movei Link gotted !',
+                  wvVisible: false,
+                  movie_dl_link: link,
+                });
+                return true;
+          }
+          
         this.API_.saveLink(link).then(data=>{
           if (data.trim()==""){
             this.API_.getConfigs_local("links_manager").then(config_link=>{
@@ -365,7 +379,7 @@ class WebViewScreen extends React.Component {
     render_view(){
       return (
         <View>
-          <Text style={styles.text_status} style={{fontSize:14}}>Saved list : {this.state.links_manager}</Text>
+          <Text style={styles.text_status} style={{fontSize:14,color:""white}}>Saved list : {this.state.links_manager}</Text>
           <Button
             disabled={this.state.movie_dl_link==""}
             title="Download / watch"
