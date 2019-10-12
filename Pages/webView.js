@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create(
     {
       container: {
-        flex: 1,
+        //flex: 1,
         backgroundColor:"black"
       },
       WebViewStyle:{
@@ -377,6 +377,7 @@ class WebViewScreen extends React.Component {
     render_view(){
       return (
         <View>
+          <Text style={styles.text_status}>{this.state.text_status}</Text>
           <Text style={styles.text_status} >Saved list : {this.state.links_manager}</Text>
           <Button
             disabled={this.state.movie_dl_link==""}
@@ -427,8 +428,7 @@ class WebViewScreen extends React.Component {
         }
         return (
         <View style={styles.container} >
-          
-          <Text style={styles.text_status}>{this.state.text_status}</Text>
+
           {this.render_view()}
           {hidder}
           {ads}
