@@ -70,7 +70,22 @@ class MovieRow_ extends React.Component {
             this.MAPI = new MoviesAPI();
             this.MAPI.API = this.props.API;
           }
+          getMovies_favorites = async ()=>{
+            let favorites  = await AsyncStorage.getItem("favorites");
+            if(favorites){
+              favorites = JSON.parse(favorites);
+            }else{
+              favorites = {};
+            }
+            console.log(Object.values(favorites))
+            return Object.values(favorites);
+        }
         getMoviesList(cat){
+            if(cat=="Favorites"){
+                this.getMovies_favorites().then(favs=>{
+                    this.setState({"mlist":favs});
+                });
+            }
             const page = (cat[0]=="/")?-1:this.state.page;
             const cat_page= cat+"_"+page;
             this.getMoviesList_local(cat_page).then(data => {

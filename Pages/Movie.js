@@ -111,6 +111,7 @@ class MovieScreen extends React.Component {
     this.state = {
       output:"walo",
       movie :false,
+      isFav:false,
     };
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
@@ -139,7 +140,13 @@ class MovieScreen extends React.Component {
   }
   //##########################################################
   componentDidMount(){
-    this.props.navigation.setParams({movie_title: "Movie",deleteMovieCache : this.deleteMovieCache });
+    this.props.navigation.setParams({
+      movie_title: "Movie",
+      deleteMovieCache : this.deleteMovieCache,
+      setFav:this.setFav,
+      isFav : this.state.isFav,
+
+     });
   }
   static navigationOptions =  ({ navigation  }) => ({
     headerStyle: header_style.header,
@@ -149,7 +156,13 @@ class MovieScreen extends React.Component {
     headerRight: a=>{
       const {params = {}} = navigation.state;
       return (
-        <View>
+        <View style={{flex:1,flexDirection:"row"}} >
+          <Icon.Button name={(params.isFav)?"heart":"heart-o"}
+            style={{backgroundColor:"green"}}
+            iconStyle={{color:"red"}}
+            onPress={ () => params.setFav(!params.isFav) }
+            title="Save"
+          />
           <Icon.Button name="refresh"
             style={{backgroundColor:"black"}}
             onPress={ () => params.deleteMovieCache() }
@@ -187,6 +200,7 @@ class MovieScreen extends React.Component {
   }
   setMovie = async (data , link, setlocal=true)=>{
     this.history.push(data);
+    this.getFav();
     this.setState({"movie":data});
     this.props.navigation.setParams({movie_title: data.title, });
     // local storage
@@ -194,9 +208,34 @@ class MovieScreen extends React.Component {
       let movies_local = await AsyncStorage.getItem("movies")
       movies_local = JSON.parse(movies_local);
       movies_local[link] = data;
-      await AsyncStorage.setItem("movies", JSON.stringify(movies_local) )
+      await AsyncStorage.setItem("movies", JSON.stringify(movies_local) );
     }
   }
+  setFav = async (isFav)=>{
+    let favorites  = await AsyncStorage.getItem("favorites");
+    if(favorites){
+      favorites = JSON.parse(favorites);
+    }else{
+      favorites = {};
+    }
+    favorites[this.link] = this.state.movie;
+
+    await AsyncStorage.setItem("favorites",JSON.stringify(favorites));
+    this.props.navigation.setParams({isFav:isFav});
+    this.setState({isFav:isFav});
+  };
+  getFav = async ()=>{
+    let favorites  = await AsyncStorage.getItem("favorites");
+    if(favorites){
+      favorites = JSON.parse(favorites);
+      if(this.link in favorites){
+        this.setState({isFav:true});
+        this.props.navigation.setParams({isFav:true});
+      }
+    }else{
+      await AsyncStorage.setItem("favorites","{}");
+    }
+  };
   getMovie = async (link)=>{
     this.link = link;
     this.getingMovie = true;
@@ -300,7 +339,7 @@ class MovieScreen extends React.Component {
         title="Watch Trailer"
         color="gray"
         onPress={() => {
-          Linking.openURL(value+"");
+          Linking.openURL(this.state.movie["trailer"]);
         }} 
          />);
       }
@@ -309,6 +348,9 @@ class MovieScreen extends React.Component {
       }
       if(key=="title"){
         value=this.getparam("title");
+      }
+      if(key=="link"){
+        return;
       }
       return (    
       <View style={styles.row} key={Math.random()}>
@@ -323,8 +365,10 @@ class MovieScreen extends React.Component {
         color= "#8e44ad"
         onPress={() => this.getVid( this.link,link_last )} 
          />);
-    let img_url = (this.state.movie instanceof Object  && "img" in this.state.movie ) ? "https:"+this.state.movie.img: "";
-    let img_tag = (img_url!="") ? (<Image source={{ uri: img_url }} style={{height:300}} />) : (<Text></Text>); 
+    if(this.state.movie instanceof Object && "img" in this.state.movie){
+      this.state.movie.img = (this.state.movie.img.slice(0,4)=="http") ?this.state.movie.img :"https:"+this.state.movie.img;
+    }
+    let img_tag = (this.state.movie instanceof Object && this.state.movie.img) ? (<Image source={{ uri: this.state.movie.img }} style={{height:300}} />) : (<Text></Text>); 
     return (
 
           <ScrollView style={styles.container}>

@@ -17,6 +17,7 @@ class HomeScreen extends React.Component {
     };
     this.cats = [
       {'name':'Home','uri':'movies',},
+      {'name':'Favorites','uri':'Favorites',},
       {'name':'Series','uri':'tv',},
       {'name':'Trending','uri':'trending',},
       {'name':'2019','uri':'movies/2019',},
@@ -48,7 +49,10 @@ class HomeScreen extends React.Component {
   drawerContent = () => {
     let btns = this.cats.map( (category,v) => {
       return (
-        <Button title={category["name"]}  key = {category["name"]}
+        <Button 
+        color={(category["name"]=="Favorites")?"orange":""}
+        title={category["name"]}  
+        key = {category["name"]}
         onPress={()=>{
           this.setState({cat:category["uri"],openSidMenu:false}); 
           this.props.navigation.setParams({cat:category["name"]});

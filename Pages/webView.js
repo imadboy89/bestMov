@@ -7,11 +7,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create(
     {
       container: {
-        //flex: 1,
+        flex:1,
         backgroundColor:"black"
       },
       WebViewStyle:{
-        
+        //flex:1
       },
       hidderStyle:{
         flex:1,
@@ -126,7 +126,8 @@ class WebViewScreen extends React.Component {
           autoRetry :false,
           ads_url:"",
           webView_visible:true,
-          movie_dl_link :""
+          movie_dl_link :"",
+          first_render : true
         };
         
         //this.fullScreenCmd = '$(".vjs-mute-control").click();alert($(".vjs-mute-control").text());'
@@ -344,10 +345,13 @@ class WebViewScreen extends React.Component {
       }
       }
     render_WebView(){
-      
+      if(this.state.first_render){
+        this.state.first_render = false;
+        return null;
+      }
       return (!this.state.wvVisible) ? null :(
           <WebView 
-          style={styles.WebViewStyle }
+          style={styles.WebViewStyle_hidden }
           source={{ uri: this.state.movie_link }}
           onNavigationStateChange={this._onNavigationStateChange.bind(this)}
           javaScriptEnabled={true}
@@ -359,7 +363,7 @@ class WebViewScreen extends React.Component {
           onLoadEnd={a=>{              
             //this.WebView.injectJavaScript (this.injectedJS);
             //console.log("Loaded");
-          } }
+          }}
           ref={c => {
             this.WebView = c;
             //console.log(this.originWhitelist);
@@ -375,8 +379,9 @@ class WebViewScreen extends React.Component {
       Linking.openURL(this.state.movie_dl_link);
     }
     render_view(){
+
       return (
-        <View>
+        <View style={{height:350,}}>
           <Text style={styles.text_status}>{this.state.text_status}</Text>
           <Text style={styles.text_status} >Saved list : {this.state.links_manager}</Text>
           <Button
@@ -394,9 +399,10 @@ class WebViewScreen extends React.Component {
                       style={{width:60,backgroundColor:"#5f363999",height:45}}
                       value = {this.state.autoRetry}
                       onValueChange={ (newValue)=> {
-                        console.log("----onValueChange");
+                        if(this.WebView){
                           this.WebView.postMessage("autoRetry="+( (newValue)?1:0 ));
                           this.setState({autoRetry: newValue});
+                        }
                       }}
                   />
               </View>
@@ -417,6 +423,7 @@ class WebViewScreen extends React.Component {
         </View>      );
     }
     render() {
+      console.log("render WBVWS")
       let ads = (this.state.ads_url=="")?null : (
         <WebView_ads url={this.state.ads_url} />
       );
@@ -430,7 +437,7 @@ class WebViewScreen extends React.Component {
         <View style={styles.container} >
 
           {this.render_view()}
-          {hidder}
+          {/*hidder*/}
           {ads}
           {this.render_WebView()}
           {/* <WebView_ads url={this.state.WebView_ads_url}/> */}

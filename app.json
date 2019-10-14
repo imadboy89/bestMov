@@ -1,28 +1,34 @@
 {
   "expo": {
-    "name": "github.com/imadboy89/bestmov",
-    "description": "imadboy89/bestMov @ Oct 11, 2019",
-    "slug": "snack-696f2180-c061-4a13-852e-0b066694c9f7",
-    "privacy": "unlisted",
+    "name": "best Movies for free",
+    "slug": "BestMov",
+    "privacy": "public",
     "sdkVersion": "35.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "primaryColor": "#cccccc",
-    "icon": "https://d1wp6m56sqw74a.cloudfront.net/~assets/c9aa1be8a6a6fe81e20c3ac4106a2ebc",
-    "loading": {
-      "icon": "https://d1wp6m56sqw74a.cloudfront.net/~assets/c9aa1be8a6a6fe81e20c3ac4106a2ebc",
-      "hideExponentText": false
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
     },
-    "packagerOpts": {
-      "assetExts": [
-        "ttf",
-        "mp4",
-        "otf",
-        "xml"
-      ]
+    "updates": {
+      "fallbackToCacheTimeout": 0
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "android": {
+      "package": "com.imadboss.bestmovies"
+    },
+    "description": ""
   }
 }

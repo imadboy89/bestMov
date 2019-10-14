@@ -111,7 +111,9 @@ class SettingsScreen extends React.Component {
           return (<Text style={{fontSize:18,color:"#e67e22"}}>Settings</Text>)},
       headerRight: a=>{
         const {params = {}} = navigation.state;
-        return (
+        return null;
+        /*
+        (
           <View style={styles.row}>
             <Button style={{backgroundColor:"#141514"}}
               color="black"
@@ -124,7 +126,7 @@ class SettingsScreen extends React.Component {
               title="Cancel"
             />
           </View>
-        )
+        )*/
         },
   
     });
@@ -157,7 +159,7 @@ class SettingsScreen extends React.Component {
                 <View style={styles.container}>
 
                     <View style={styles.row_view}>
-                        <Text style={styles.text_k}> Hide WV  :</Text>
+                        <Text style={styles.text_k}> Show WV  :</Text>
                         <View style={styles.text_v}>
                             <Switch 
                                 style={styles.small_elemnt}
