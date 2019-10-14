@@ -167,7 +167,7 @@ class HomeScreen extends React.Component {
           <MenuDrawer 
             open={this.state.openSidMenu} 
             drawerContent={this.drawerContent()}
-            drawerPercentage={45}
+            drawerPercentage={60}
             animationTime={250}
             overlay={true}
             opacity={0.4}

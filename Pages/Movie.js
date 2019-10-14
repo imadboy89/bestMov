@@ -288,19 +288,25 @@ class MovieScreen extends React.Component {
       visible={this.state.modalVisible}
       onRequestClose={() => { this.setState({ modalVisible:false,}); } }
     >
-    <Image 
-    source={{ uri: this.state.movie.img }} 
-    style={{flex:1}}
-    resizeMode={'contain'}
-     />
+      <View style={{flex:.1,backgroundColor:"black"}}></View>
+      <View style={{flex:1,backgroundColor:"black"}}>
+        <Image 
+        source={{ uri: this.state.movie.img }} 
+        style={{flex:1}}
+        resizeMode={'contain'}
+        />
 
-      <Button
-        title="Close"
-        color="green"
-        onPress={()=>{
-          this.setState({modalVisible:false,});
-        }}
-      ></Button>
+          <Button
+            style={{marginTop:50}}
+            title="Close"
+            color="#34495e"
+            onPress={()=>{
+              this.setState({modalVisible:false,});
+            }}
+          ></Button>
+      </View>
+      <View style={{flex:.1,backgroundColor:"black"}}></View>
+
     </Modal>
     );
   }
