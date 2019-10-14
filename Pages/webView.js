@@ -1,7 +1,7 @@
 import React from 'react';
 import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch  } from 'react-native';
 import API from "../Libs/API"
-import header_style from '../Styles/styles';
+import {header_style, buttons_style} from '../Styles/styles';
 import ShareBtn from "../Components/share";
 import Icon from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create(
@@ -136,12 +136,6 @@ class WebViewScreen extends React.Component {
           this.state.webView_visible = values["webView_visible"];
           this.state.links_manager   = values["links_manager"];
         });
-              
-        this.API_.getConfigs_local("links_manager").then(config_link=>{
-          this.setState({
-            links_manager : config_link,
-          });
-        });
         this.injectedJS = `
         /*
         window.onbeforeunload = function(event) {
@@ -253,14 +247,23 @@ class WebViewScreen extends React.Component {
         const {state} = navigation;
         return (
           <View style={header_style.container}>
-            <Icon.Button name="external-link" 
+            <Icon 
+              style={buttons_style.button}
+              size ={20}
+              color="#3498db"
+              
+              name="external-link" 
               onPress={o => {
                 Linking.openURL(state.params.movie_link);
               }}
               title="Open"
             />
-            <Icon.Button name="save" 
-              style={{backgroundColor:"black"}}
+            <Icon 
+              style={buttons_style.button}
+              size ={20}
+              color="#ecf0f1"
+
+              name="save" 
               onPress={o => {
                 Linking.openURL(state.params.API.links_manager +"?action=save&link="+ state.params.movie_link+"&name="+state.params.movie_title);
               }}
@@ -433,13 +436,16 @@ class WebViewScreen extends React.Component {
             <View style={styles.hidderStyle}></View>
           );
         }
+        const webviews_size = (this.state.webView_visible)?"50%":"1%";
         return (
         <View style={styles.container} >
 
           {this.render_view()}
           {/*hidder*/}
-          {ads}
-          {this.render_WebView()}
+          <View style={{height:webviews_size}}>
+            {ads}
+            {this.render_WebView()}
+          </View>
           {/* <WebView_ads url={this.state.WebView_ads_url}/> */}
         </View>
         );

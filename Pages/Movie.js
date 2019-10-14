@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image,Linking  } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image,Linking,Modal,TouchableHighlight  } from 'react-native';
 import MoviesAPI from "../Libs/MoviesAPI"
 import loader from "../Components/Loader"
-import header_style from "../Styles/styles";
+import {header_style,buttons_style} from "../Styles/styles";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
@@ -112,6 +112,7 @@ class MovieScreen extends React.Component {
       output:"walo",
       movie :false,
       isFav:false,
+      modalVisible:false,
     };
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
@@ -157,14 +158,17 @@ class MovieScreen extends React.Component {
       const {params = {}} = navigation.state;
       return (
         <View style={{flex:1,flexDirection:"row"}} >
-          <Icon.Button name={(params.isFav)?"heart":"heart-o"}
-            style={{backgroundColor:"green"}}
-            iconStyle={{color:"red"}}
+          <Icon
+            name={(params.isFav)?"heart":"heart-o"}
+            style={[buttons_style.button,{color:"#e74c3c"}]}
+            
             onPress={ () => params.setFav(!params.isFav) }
             title="Save"
           />
-          <Icon.Button name="refresh"
-            style={{backgroundColor:"black"}}
+          <Icon
+            style={buttons_style.button}
+
+            name="refresh"
             onPress={ () => params.deleteMovieCache() }
             title="reFresh"
           />
@@ -273,6 +277,33 @@ class MovieScreen extends React.Component {
   getparam(param){
     return this.props["navigation"].getParam("movie")[param] ;
   }
+  modal(){
+    if(this.MAPI.API.isWeb){
+      return null;
+    }
+    return(
+      <Modal 
+      animationType="slide"
+      transparent={true}
+      visible={this.state.modalVisible}
+      onRequestClose={() => { this.setState({ modalVisible:false,}); } }
+    >
+    <Image 
+    source={{ uri: this.state.movie.img }} 
+    style={{flex:1}}
+    resizeMode={'contain'}
+     />
+
+      <Button
+        title="Close"
+        color="green"
+        onPress={()=>{
+          this.setState({modalVisible:false,});
+        }}
+      ></Button>
+    </Modal>
+    );
+  }
   render() {
     let link_last = "";
     /*
@@ -373,7 +404,15 @@ class MovieScreen extends React.Component {
     if(this.state.movie instanceof Object && "img" in this.state.movie){
       this.state.movie.img = (this.state.movie.img.slice(0,4)=="http") ?this.state.movie.img :"https:"+this.state.movie.img;
     }
-    let img_tag = (this.state.movie instanceof Object && this.state.movie.img) ? (<Image source={{ uri: this.state.movie.img }} style={{height:300}} />) : (<Text></Text>); 
+    let img_tag = (this.state.movie instanceof Object && this.state.movie.img) ? (
+      <TouchableHighlight onPress={() => this.setState({modalVisible:true})}>
+        <Image 
+        source={{ uri: this.state.movie.img }} 
+        style={{height:400}}
+        resizeMode={'contain'}
+        />
+     </TouchableHighlight>
+    ) : (<Text></Text>); 
     return (
 
           <ScrollView style={styles.container}>
@@ -382,6 +421,7 @@ class MovieScreen extends React.Component {
             </View>
             {props}
             {actual_page}
+            {this.modal()}
           </ScrollView>
 
     );

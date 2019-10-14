@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, Image,TextInput,ScrollView,Modal } from
 import MoviesListview from "../Components/MoviesList"
 import MenuDrawer from 'react-native-side-drawer'
 import API from "../Libs/API"
-import header_style from "../Styles/styles";
+import {header_style,buttons_style} from "../Styles/styles";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -50,7 +50,8 @@ class HomeScreen extends React.Component {
     let btns = this.cats.map( (category,v) => {
       return (
         <Button 
-        color={(category["name"]=="Favorites")?"orange":""}
+        style={{margin:5,padding:5}}
+        color={(category["name"]=="Favorites")?"#2980b9":"#7f8c8d"}
         title={category["name"]}  
         key = {category["name"]}
         onPress={()=>{
@@ -61,7 +62,8 @@ class HomeScreen extends React.Component {
       );
     } );
     return (
-      <ScrollView style={{color:"black"}}>
+      <ScrollView style={{backgroundColor:"#34495e",color:"black",padding:10}}>
+        <Text> test </Text>
         {btns}
       </ScrollView>
     );
@@ -89,13 +91,16 @@ class HomeScreen extends React.Component {
       const {params = {}} = navigation.state;
       return (
         <View style={{flex:1,flexDirection:"row"}}>
-          <Icon.Button name="reorder"
+          <Icon 
+            style={buttons_style.button}
+            color="#3498db"
+            name="reorder"
             onPress={ () => params.toggleOpen() }
             title="Menu"
           />
-          <Icon.Button  name ="wrench"
-            style={{backgroundColor:"black"}}
-            iconStyle={{padding:0,margin:0,paddingRight:-2}}
+          <Icon
+            style={[buttons_style.button,{color:"#3498db"}]}
+            name ="wrench"
             onPress={ () => params.openSettings() }
             title="Settings"
           />
@@ -106,8 +111,9 @@ class HomeScreen extends React.Component {
     headerRight: a=>{
       const {params = {}} = navigation.state;
       return (
-          <Icon.Button
-            style={{backgroundColor:"black"}}
+          <Icon
+            style={buttons_style.button}
+
             name = "search"
             onPress={ () => params.openModal() }
             title="Search"
@@ -115,34 +121,49 @@ class HomeScreen extends React.Component {
       )
       },
   });
+  modal(){
+    if(this.API.isWeb){
+      return null;
+    }
+    return (
+      <Modal 
+      animationType="slide"
+      transparent={true}
+      visible={this.state.modalVisible}
+      onRequestClose={() => { this.setState({ modalVisible:false,}); } }
+    >
+      <View style={{flex:.5,backgroundColor:"#2c3e5066"}}></View>
+      <View style={{height:50,backgroundColor:"#7f8c8d",flexDirection:"row"}}>
+      <TextInput
+        style={{ width: "80%", borderColor: 'gray', borderWidth: 1 ,color:"white",fontSize:18,margin:10}}
+        placeholder="Searching for .."
+        placeholderTextColor="#ecf0f1"
+
+        onChangeText ={a=>{
+          this.q=a;
+        }}
+        
+      />
+      <Icon.Button
+        
+        title="Search"
+        name="search"
+        onPress={()=>{
+          this.setState({cat:"/explore/?q="+this.q, modalVisible:false,});
+          this.q = ""
+          //this.visibleModal(false);
+        }}
+      />
+      </View>
+      <View style={{flex:1,backgroundColor:"#2c3e5066"}}></View>
+    </Modal>
+    );
+  }
     render() {
       
       return (
         <View >
-            <Modal 
-              animationType="slide"
-              transparent={false}
-              visible={this.state.modalVisible}
-              onRequestClose={() => { this.setState({ modalVisible:false,}); } }
-            >
-              <Text> Search for : </Text>
-              <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                onChangeText ={a=>{
-                  this.q=a;
-                }}
-                
-              />
-              <Button
-                title="Search"
-                color="green"
-                onPress={()=>{
-                  this.setState({cat:"/explore/?q="+this.q, modalVisible:false,});
-                  this.q = ""
-                  //this.visibleModal(false);
-                }}
-              ></Button>
-            </Modal>
+          {this.modal()}
           <MenuDrawer 
             open={this.state.openSidMenu} 
             drawerContent={this.drawerContent()}

@@ -20,6 +20,7 @@ class API {
     this.proxy =
       'https://www.oxus.tj/sites/default/private/files/.proxy.php?url=';
     this.usingproxy = Platform.OS == 'web';
+    this.isWeb = Platform.OS == 'web';
     this.config_url =
       'https://raw.githubusercontent.com/imadboy89/bestMov/master/Libs/configs.json';
     this.links_manager = 'http://bestmov.byethost16.com/';

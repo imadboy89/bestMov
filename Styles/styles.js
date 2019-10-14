@@ -20,5 +20,18 @@ const header_style = StyleSheet.create({
     }
  
  });
+ const buttons_style = StyleSheet.create({
+     button:{
+         padding:5,
+         fontSize:26,
+         color:"white"
+     }
+ 
+ });
 
- export default header_style;
+
+ //export modules
+module.exports = {
+    header_style,
+    buttons_style 
+}
