@@ -218,9 +218,14 @@ class MovieScreen extends React.Component {
     }else{
       favorites = {};
     }
-    favorites[this.link] = this.state.movie;
+    if(isFav){
+      favorites[this.link] = this.state.movie;
+    }else{
+      delete favorites[this.link];
+    }
 
     await AsyncStorage.setItem("favorites",JSON.stringify(favorites));
+
     this.props.navigation.setParams({isFav:isFav});
     this.setState({isFav:isFav});
   };
