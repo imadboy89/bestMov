@@ -6,6 +6,7 @@ import HomeScreen  from "./Pages/Home";
 import MovieScreen from "./Pages/Movie";
 import WebViewScreen from "./Pages/webView";
 import SettingsScreen from "./Pages/Settings";
+import Watch_WVScreen from "./Pages/Watch_WV";
 
 
 
@@ -16,6 +17,7 @@ const AppNavigator = createStackNavigator(
     Movie     : MovieScreen,
     WebViewer : WebViewScreen,
     Settings  : SettingsScreen,
+    Watch_WV  : Watch_WVScreen,
   },
   {
     initialRouteName: 'Home',

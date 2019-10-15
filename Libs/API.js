@@ -31,7 +31,6 @@ class API {
 
   saveLink = async link => {
     const links_manager = await this.getConfigs_local('links_manager');
-    console.log( "save link ",links_manager);
     if (links_manager == 'Not Active' || links_manager == '') {
       return new Promise(function(resolve, reject) {
         return false;
@@ -40,7 +39,6 @@ class API {
     let name = link.split('/')[link.split('/').length - 1];
     name = name.replace('[EgyBest]', '').trim();
     link = links_manager + '?action=save&link=' + link + '&name=' + name;
-    console.log(link);
     return fetch(link, {
       method: 'GET',
     })
@@ -70,7 +68,6 @@ class API {
     })
       .then(response => response.json())
       .then(responseJson => {
-        console.log(responseJson);
         this.configs = responseJson;
         for (let i = 0; i < this.configs['action_link'].length; i++) {
           if (this.configs['action_link'][i] == '') {
@@ -101,9 +98,10 @@ class API {
         configs['action_using'] < configs['action_link'].length
           ? configs['action_using']
           : this.configs['action_using'];
-
       configs['links_manager'] =
-        configs['action_link'][configs['action_using']];
+         configs['action_link'].indexOf(configs['links_manager'])
+          ? configs['links_manager']
+          : configs['action_link'][configs['action_using']];
     } else {
       configs = this.configs;
       configs['webView_visible'] = true;
@@ -119,7 +117,6 @@ class API {
     }
   };
   getConfigs_local = async key => {
-    console.log('getConfigs_local');
     let configs = await AsyncStorage.getItem('configs');
     configs = JSON.parse(configs);
     if (key) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch  } from 'react-native';
+import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch,BackHandler  } from 'react-native';
 import API from "../Libs/API"
 import {header_style, buttons_style} from '../Styles/styles';
 import ShareBtn from "../Components/share";
@@ -11,7 +11,8 @@ const styles = StyleSheet.create(
         backgroundColor:"black"
       },
       WebViewStyle:{
-        //flex:1
+        width:"100%",
+        height:"50%",
       },
       hidderStyle:{
         flex:1,
@@ -32,7 +33,7 @@ const styles = StyleSheet.create(
         //backgroundColor:"#34495e",
         fontSize: 16,
         fontWeight: 'bold',
-        width:"30%",
+        width:"40%",
         color:"white",
         textAlign: 'right'
       },
@@ -41,7 +42,7 @@ const styles = StyleSheet.create(
         marginLeft:20,
         fontSize: 14,
         fontWeight: 'bold',
-        width:"65%",
+        width:"58%",
         color:"white",
         textAlign: 'left'
       },
@@ -51,10 +52,9 @@ const styles = StyleSheet.create(
         //alignItems: 'flex-start',
         alignItems: 'center',
         height : 30 ,
-        marginRight:20,
-        marginLeft:20,
+        marginRight:10,
+        marginLeft:10,
         marginBottom:10,
-        marginTop:20,
         borderStyle : "solid",
         borderWidth : 1,
         textAlign: 'right',
@@ -75,15 +75,10 @@ const styles = StyleSheet.create(
           console.log("webviewADS ",webview.url);
         }
         render(){
-          try {
-            this.webView.ref.reload();  
-          } catch (error) {
-            
-          }
           
           return (
             <WebView 
-            style={{}}
+            style={styles.WebViewStyle}
             source={{ uri: this.state.url }}
             onNavigationStateChange={this._onNavigationStateChange.bind(this)}
             javaScriptEnabled={true}
@@ -127,7 +122,6 @@ class WebViewScreen extends React.Component {
           ads_url:"",
           webView_visible:true,
           movie_dl_link :"",
-          first_render : true
         };
         
         //this.fullScreenCmd = '$(".vjs-mute-control").click();alert($(".vjs-mute-control").text());'
@@ -227,7 +221,21 @@ class WebViewScreen extends React.Component {
         ] ;
         this.originWhitelist = ["*"];
         this.updt_count = 2;
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     }
+  //####################### BACK HANDLER ###################################
+  componentWillMount() {BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);}
+  componentWillUnmount() {BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);}
+  handleBackButtonClick() {
+    //this.props.navigation.goBack(null);
+    const history = this.props["navigation"].getParam("history");
+    this.props.navigation.navigate('Movie',{
+      "movie" : history[history.length-1],
+      history : history});
+    return true;
+  }
+  //##########################################################
+
 
     componentDidMount(){
       API_ =  new API() ;
@@ -348,13 +356,10 @@ class WebViewScreen extends React.Component {
       }
       }
     render_WebView(){
-      if(this.state.first_render){
-        this.state.first_render = false;
-        return null;
-      }
+
       return (!this.state.wvVisible) ? null :(
           <WebView 
-          style={styles.WebViewStyle_hidden }
+          style={styles.WebViewStyle }
           source={{ uri: this.state.movie_link }}
           onNavigationStateChange={this._onNavigationStateChange.bind(this)}
           javaScriptEnabled={true}
@@ -384,7 +389,7 @@ class WebViewScreen extends React.Component {
     render_view(){
 
       return (
-        <View style={{height:350,}}>
+        <View style={{height:300,}}>
           <Text style={styles.text_status}>{this.state.text_status}</Text>
           <Text style={styles.text_status} >Saved list : {this.state.links_manager}</Text>
           <Button
@@ -394,12 +399,19 @@ class WebViewScreen extends React.Component {
             onPress={()=> Linking.openURL(this.state.movie_dl_link) }
             
           />
+          <Button
+            disabled={true}
+            title="Download2Server"
+            color="#16a085"
+            onPress={()=> Linking.openURL(this.state.movie_dl_link) }
+            
+          />
           <ShareBtn title={this.movie_title} link={this.state.movie_dl_link} disabled={this.state.movie_dl_link==""} />
           <View style={styles.row_view}>
               <Text style={styles.text_k}> AutoTry  :</Text>
               <View style={styles.text_v}>
                   <Switch 
-                      style={{width:60,backgroundColor:"#5f363999",height:45}}
+                      style={{width:60,height:30}}
                       value = {this.state.autoRetry}
                       onValueChange={ (newValue)=> {
                         if(this.WebView){
@@ -414,7 +426,7 @@ class WebViewScreen extends React.Component {
               <Text style={styles.text_k}> show webView  :</Text>
               <View style={styles.text_v}>
                   <Switch 
-                      style={{width:60,backgroundColor:"#5f363999",height:45}}
+                      style={{width:60,height:30}}
                       value = {this.state.webView_visible}
                       onValueChange={ (newValue)=> {
                           this.setState({webView_visible: newValue});
@@ -422,7 +434,12 @@ class WebViewScreen extends React.Component {
                   />
               </View>
           </View>
-
+          <View style={styles.row_view}>
+              <Text style={{backgroundColor:"#2980b9bf",color:"#ecf0f1"}}> 
+              Note :
+              Please ignore any demand to open app in play store (or another), or alert message.
+              </Text>
+          </View>
         </View>      );
     }
     render() {
@@ -430,23 +447,19 @@ class WebViewScreen extends React.Component {
       let ads = (this.state.ads_url=="")?null : (
         <WebView_ads url={this.state.ads_url} />
       );
-      let hidder = null;
         if (this.state.webView_visible==false){
           hidder = (
             <View style={styles.hidderStyle}></View>
           );
         }
-        const webviews_size = (this.state.webView_visible)?"50%":"1%";
+        const webviews_size = (this.state.webView_visible)?{width:"99%",height:"50%"}:{width:"1%",height:"1%"};
         return (
         <View style={styles.container} >
-
           {this.render_view()}
-          {/*hidder*/}
-          <View style={{height:webviews_size}}>
-            {ads}
+          <View style={[webviews_size,{overflow:'hidden'}]}>
             {this.render_WebView()}
+            {ads}
           </View>
-          {/* <WebView_ads url={this.state.WebView_ads_url}/> */}
         </View>
         );
     

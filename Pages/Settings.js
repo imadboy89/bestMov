@@ -85,11 +85,12 @@ class SettingsScreen extends React.Component {
         cache_cleared:false,
       };
       this.API = this.props["navigation"].getParam("API");
-      
+
       this.API.getConfigs_local().then( configs=>{
         this.setState({webView_visible : configs.webView_visible,links_manager   : configs.links_manager});
-        console.log("start settings");
       });
+      
+
       
       
     }
@@ -182,8 +183,8 @@ class SettingsScreen extends React.Component {
                         }>
                             {this.get_API_links()}
                         </Picker>
-
                     </View>
+                    <Text style={[styles.row_view,{color:"#bdc3c7",justifyContent:"center",textAlign:"center"}]}>{this.state.links_manager}</Text>
 
                     <View style={styles.row_view}>
                         <Text style={styles.text_k}> Clear cache  :</Text>

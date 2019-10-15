@@ -117,16 +117,16 @@ class MovieScreen extends React.Component {
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
     this.getMovie(this.link);
-    
-    this.history = [];
+    console.log(this.props["navigation"].getParam("history"));
+    this.history = this.props["navigation"].getParam("history") ? this.props["navigation"].getParam("history") : [];
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.current_ind = -1;
 
     this.getingMovie = false;
   }
   //####################### BACK HANDLER ###################################
-  componentWillMount() {BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);}
-  componentWillUnmount() {BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);}
+  componentWillMount() {BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);console.log("willmount");}
+  componentWillUnmount() {BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);console.log("willUNmount");}
   handleBackButtonClick() {
     if(this.history.length<=1 ){
       this.props.navigation.goBack(null);
@@ -181,8 +181,22 @@ class MovieScreen extends React.Component {
   getVid(dl_link, quality){
     is_dl   = (dl_link[0]=="/") ? true : false;
     dl_link = (dl_link[0]=="/") ? this.MAPI.API.domain + dl_link : dl_link ;
-    if(this.state.movie instanceof Object)
-      this.props.navigation.navigate('WebViewer',{movie_link:dl_link, movie_title:this.getparam("title"),is_dl:is_dl,quality:quality})
+    if(this.state.movie instanceof Object){
+      if(quality){
+        this.props.navigation.navigate('WebViewer',{
+          movie_link:dl_link, 
+          movie_title:this.getparam("title"),
+          is_dl:is_dl,quality:quality,
+          history:this.history
+        });
+      }else{
+        this.props.navigation.navigate('Watch_WV',{
+          movie_link:dl_link, 
+          movie_title:this.getparam("title"),
+          history:this.history
+        });
+      }
+    }
     
     /*
     this.MAPI.getDlLink(dl_link).then(link=> {
@@ -201,9 +215,11 @@ class MovieScreen extends React.Component {
     this.setState({"movie":false});
     this.history.pop();
     this.getMovie(this.link);
+    //AsyncStorage.setItem("last_history", JSON.stringify(this.history) )
   }
   setMovie = async (data , link, setlocal=true)=>{
     this.history.push(data);
+    //AsyncStorage.setItem("last_history", JSON.stringify(this.history) )
     this.getFav();
     this.setState({"movie":data});
     this.props.navigation.setParams({movie_title: data.title, });
@@ -312,11 +328,6 @@ class MovieScreen extends React.Component {
   }
   render() {
     let link_last = "";
-    /*
-    if (this.getingMovie==false && !this.state.movie){
-      this.getMovie(this.getparam("link"));
-      console.log("--------------------THE bug of loooading "+this.current_ind+","+this.history.length+"-------------------");
-    }*/
     let props = (!this.state.movie)? loader : Object.keys(this.state.movie).map( key =>{
       value = this.state.movie[key] ;
       if (key=="dl"){
