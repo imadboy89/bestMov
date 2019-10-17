@@ -81,6 +81,9 @@ class MovieRow_ extends React.Component {
             return Object.values(favorites);
         }
         getMoviesList(cat){
+            if(cat==""){
+                return
+            }
             if(cat=="Favorites"){
                 this.getMovies_favorites().then(favs=>{
                     this.setState({"mlist":favs});

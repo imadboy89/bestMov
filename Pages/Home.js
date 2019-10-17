@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image,TextInput,ScrollView,Modal } from 'react-native';
+import { StyleSheet, Text, View, Button, AsyncStorage,TextInput,ScrollView,Modal } from 'react-native';
 import MoviesListview from "../Components/MoviesList"
 import MenuDrawer from 'react-native-side-drawer'
 import API from "../Libs/API"
@@ -42,10 +42,24 @@ class HomeScreen extends React.Component {
       {'name':'War','uri':'movies/war',},
       ]
       this.q = "";
+
+      this.clearCache();
       this.API = new API();
       this.API.getConfigs();
+      this.clearCache().then(()=>{
+        this.setState({cat:"movies"});
+        this.props.navigation.setParams({
+          cat: "Movies",});
+      });
+      
   }
-
+  
+  clearCache(){
+    return AsyncStorage.setItem("movies", JSON.stringify({}) ).then(()=>{
+      return AsyncStorage.setItem("cat", JSON.stringify({}) );
+    })
+    
+}
   drawerContent = () => {
     let btns = this.cats.map( (category,v) => {
       return (

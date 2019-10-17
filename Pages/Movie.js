@@ -117,7 +117,6 @@ class MovieScreen extends React.Component {
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
     this.getMovie(this.link);
-    console.log(this.props["navigation"].getParam("history"));
     this.history = this.props["navigation"].getParam("history") ? this.props["navigation"].getParam("history") : [];
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.current_ind = -1;
