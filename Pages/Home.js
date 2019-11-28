@@ -18,11 +18,13 @@ class HomeScreen extends React.Component {
     this.cats = [
       {'name':'Home','uri':'movies',},
       {'name':'Favorites','uri':'Favorites',},
+      {'name':'SCI-FI','uri':'movies/scifi',},
+      {'name':'Comedy','uri':'movies/comedy',},
       {'name':'Series','uri':'tv',},
       {'name':'Trending','uri':'trending',},
+      {'name':'Bluray','uri':'movies/bluray',},
       {'name':'2019','uri':'movies/2019',},
       {'name':'2018','uri':'movies/2018',},
-      {'name':'Bluray','uri':'movies/bluray',},
       {'name':'Bluray-webdl','uri':'movies/bluray-webdl',},
       {'name':'subtitled','uri':'movies/subbed',},
       {'name':'US','uri':'movies/us',},
@@ -35,9 +37,7 @@ class HomeScreen extends React.Component {
       {'name':'Horror','uri':'movies/horror',},
       {'name':'Action','uri':'movies/action',},
       {'name':'Romance','uri':'movies/romance',},
-      {'name':'Comedy','uri':'movies/comedy',},
       {'name':'Animation','uri':'movies/animation',},
-      {'name':'SCI-FI','uri':'movies/scifi',},
       {'name':'Documentary','uri':'movies/documentary',},
       {'name':'War','uri':'movies/war',},
       ]
@@ -65,7 +65,7 @@ class HomeScreen extends React.Component {
       return (
         <Button 
         style={{margin:5,padding:5}}
-        color={(category["name"]=="Favorites")?"#2980b9":"#7f8c8d"}
+        color={(category["name"]=="Favorites")? "#2980b9": (this.state.cat.toLowerCase()==category["name"] ? "#a7cdd0" : "#7f8c8d" )}
         title={category["name"]}  
         key = {category["name"]}
         onPress={()=>{
@@ -76,10 +76,15 @@ class HomeScreen extends React.Component {
       );
     } );
     return (
-      <ScrollView style={{backgroundColor:"#34495e",color:"black",padding:10}}>
-        <Text> test </Text>
-        {btns}
-      </ScrollView>
+      <View style={{flex:1,paddingBottom:10}}>
+        <ScrollView style={{backgroundColor:"#34495e",color:"black",padding:10,flex:0.9}}>
+          {btns}
+          <Text style={{margin:5,padding:5,color:"white"}} >© 2019-11-28</Text>
+          <Text style={{margin:5,padding:5,color:"white"}} >© By ImadBoss</Text>
+          <Text style={{margin:5,padding:5}} >--</Text>
+          <Text style={{margin:5,padding:5}} >--</Text>
+        </ScrollView>
+      </View>
     );
   };
   toggleOpen = () => {
@@ -106,14 +111,14 @@ class HomeScreen extends React.Component {
       return (
         <View style={{flex:1,flexDirection:"row"}}>
           <Icon 
-            style={buttons_style.button}
+            style={[buttons_style.button,{marginLeft:10}]}
             color="#3498db"
             name="reorder"
             onPress={ () => params.toggleOpen() }
             title="Menu"
           />
           <Icon
-            style={[buttons_style.button,{color:"#3498db"}]}
+            style={[buttons_style.button,{color:"#3498db",marginLeft:10}]}
             name ="wrench"
             onPress={ () => params.openSettings() }
             title="Settings"

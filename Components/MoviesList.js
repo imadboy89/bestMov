@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button,View, Text, StyleSheet, Image , FlatList, TouchableHighlight,AsyncStorage} from 'react-native';
+import { Button,View, Text, StyleSheet, ImageBackground , FlatList, TouchableHighlight,AsyncStorage} from 'react-native';
 import { withNavigation } from 'react-navigation';
 import loader from "../Components/Loader"
 import MoviesAPI from "../Libs/MoviesAPI"
@@ -34,13 +34,21 @@ const styles = StyleSheet.create({
 });
 class MovieRow_ extends React.Component {
     render() {
-    
         return (
             <TouchableHighlight 
             onPress={() => this.props.navigation.navigate('Movie',{movie:this.props.movie})} >
             <View  style={styles.container} >
                 { this.props.movie.img!="" &&
-                <Image source={{ uri: this.props.movie.img }} style={styles.image} />
+                <View style={{flex:1,backgroundColor:"black",borderStyle:"solid",borderWidth:1,borderColor:"white"}}>
+                    
+                    <ImageBackground source={{ uri: this.props.movie.img }} style={styles.image} >
+                        <View style={{justifyContent: 'center', alignItems: 'center',backgroundColor:"#2c3e5094",flexDirection:"row",color:"white"}}>
+                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Rating : {this.props.movie.rating ? this.props.movie.rating : "-"}</Text>
+                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Quality : {this.props.movie.quality ? this.props.movie.quality : "-"}</Text>
+                        </View>
+                    </ImageBackground>
+
+                </View>
                 }
                 <View style={styles.container_text}>
                     <Text style={styles.title}>
@@ -169,6 +177,19 @@ class MovieRow_ extends React.Component {
                     <Text>  </Text>
 
                 <View style={{flex: 1,flexDirection:"row",justifyContent: 'center',marginBottom: 36}}>
+                {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
+                    <Icon.Button name="backward"
+                        title=">"
+                        style={{backgroundColor:"green"}}
+                        onPress={o => {
+                            this.state.page = this.state.page>5 ? this.state.page-5 : 0;
+                            this.setState({"mlist":false});
+                            this.getMoviesList(this.props.cat);
+                        }}
+                    /> 
+                }
+                <View style={{width:7}}></View>
+                {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
                     <Icon.Button name="chevron-left"
                         style={{backgroundColor:"green"}}
                         title="<"
@@ -179,7 +200,9 @@ class MovieRow_ extends React.Component {
                         this.getMoviesList(this.props.cat);
                         }}
                     />
+                }
                     <Text style={{width:30,color:"yellow",textAlign:"center",fontSize:14}}>{this.state.page}</Text>
+
                     <Icon.Button name="chevron-right"
                         title=">"
                         style={{backgroundColor:"green"}}
@@ -190,6 +213,19 @@ class MovieRow_ extends React.Component {
                             this.getMoviesList(this.props.cat);
                         }}
                     /> 
+                    <View style={{width:7}}></View>
+                    {this.state.mlist!=false && this.state.mlist.length>0 &&
+                        <Icon.Button name="forward"
+                            title=">"
+                            style={{backgroundColor:"green"}}
+                            onPress={o => {
+                                this.state.page += 5;
+                                this.setState({"mlist":false});
+                                this.getMoviesList(this.props.cat);
+                            }}
+                        /> 
+                    }
+
                     </View>
                 </View>
                     );

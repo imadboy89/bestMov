@@ -207,7 +207,7 @@ class MoviesAPI{
                 for (var i =0;i<ahrefs.length;i++){
                     let movie = {};
                     movie["link"]    = ahrefs[i].attributes.href;
-                    movie["rating"]  = this .getText(ahrefs[0].getElementsByClassName("rating")[0]);
+                    movie["rating"]  = this .getText(ahrefs[i].getElementsByClassName("rating")[0]);
                     movie["img"]     = "https:"+ahrefs[i].getElementsByTagName("img")[0].attributes.src;
                     movie["quality"] = this .getText(ahrefs[i].getElementsByClassName("ribbon")[0]);
                     movie["title"]   = this .getText(ahrefs[i].getElementsByClassName("title")[0]);
