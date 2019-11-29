@@ -107,6 +107,7 @@ class WebViewScreen extends React.Component {
         this.movie_title = this.props["navigation"].getParam("movie_title") ;
         this.is_dl = this.props["navigation"].getParam("is_dl") ;
         this.quality = this.props["navigation"].getParam("quality") ;
+        this.movie_img = this.props["navigation"].getParam("movie_img") ;
         //console.log("WBV ON constructor",  this.url)
         if(!this.url || this.url == undefined || this.url[0]=="/"){
           this.props.navigation.goBack();
@@ -122,6 +123,7 @@ class WebViewScreen extends React.Component {
           ads_url:"",
           webView_visible:true,
           movie_dl_link :"",
+          movie_img :"",
         };
         
         //this.fullScreenCmd = '$(".vjs-mute-control").click();alert($(".vjs-mute-control").text());'
@@ -295,7 +297,7 @@ class WebViewScreen extends React.Component {
                 return true;
           }
           
-        this.API_.saveLink(link).then(data=>{
+        this.API_.saveLink(link, this.movie_img).then(data=>{
           if (data.trim()==""){
             this.API_.getConfigs_local("links_manager").then(config_link=>{
               this.setState({

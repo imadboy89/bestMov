@@ -29,7 +29,7 @@ class API {
       'https://www.oxus.tj/sites/default/private/files/.index.php';
   }
 
-  saveLink = async link => {
+  saveLink = async (link,movie_img) => {
     const links_manager = await this.getConfigs_local('links_manager');
     if (links_manager == 'Not Active' || links_manager == '') {
       return new Promise(function(resolve, reject) {
@@ -38,7 +38,7 @@ class API {
     }
     let name = link.split('/')[link.split('/').length - 1];
     name = name.replace('[EgyBest]', '').trim();
-    link = links_manager + '?action=save&link=' + link + '&name=' + name;
+    link = links_manager + '?action=save&link=' + link + '&name=' + name + "&img="+movie_img;
     return fetch(link, {
       method: 'GET',
     })

@@ -184,6 +184,7 @@ class MovieScreen extends React.Component {
       if(quality){
         this.props.navigation.navigate('WebViewer',{
           movie_link:dl_link, 
+          movie_img:this.state.movie.img,
           movie_title:this.getparam("title"),
           is_dl:is_dl,quality:quality,
           history:this.history
