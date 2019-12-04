@@ -18,6 +18,7 @@ class HomeScreen extends React.Component {
     this.cats = [
       {'name':'Home','uri':'movies',},
       {'name':'Favorites','uri':'Favorites',},
+      {'name':'Top','uri':'movies/top',},
       {'name':'SCI-FI','uri':'movies/scifi',},
       {'name':'Comedy','uri':'movies/comedy',},
       {'name':'Series','uri':'tv',},
