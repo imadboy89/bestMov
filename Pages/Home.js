@@ -15,7 +15,7 @@ class HomeScreen extends React.Component {
       cat:"movies",
       modalVisible:false,
     };
-    this.cats = [
+    this.cats = [ 
       {'name':'Home','uri':'movies',},
       {'name':'Favorites','uri':'Favorites',},
       {'name':'Top Movies','uri':'movies/top',},
