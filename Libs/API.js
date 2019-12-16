@@ -135,11 +135,14 @@ class API {
     return args_str;
   }
   API_get(model, page_nbr = 0) {
+    if( ! model ){
+      return false;
+    }
     model =
       page_nbr > 0
         ? model + this.pagenation.replace('[page_nbr]', page_nbr)
         : model;
-    model = model[0] == '/' ? model.slice(1) : model;
+    model = model && model[0] == '/' ? model.slice(1) : model;
     let isApi = false;
     let headers = { 'Content-Type': 'application/json' };
     if (model.slice(0, 3) == 'api') {

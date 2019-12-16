@@ -34,6 +34,15 @@ const styles = StyleSheet.create({
 });
 class MovieRow_ extends React.Component {
     render() {
+        if( !this.props.movie){
+            return null;
+        }
+        
+        let rating = this.props.movie.rating ? this.props.movie.rating : "-" ;
+        rating = rating=="-" && this.props.movie[" التقييم"] ? this.props.movie[" التقييم"].trim().split(" ")[0] : rating;
+
+        let quality = this.props.movie.quality ? this.props.movie.quality : "-";
+        quality = quality=="-" && this.props.movie[" الجودة"] ? this.props.movie[" الجودة"].trim().split(" ")[0] : quality ;
         return (
             <TouchableHighlight 
             onPress={() => this.props.navigation.navigate('Movie',{movie:this.props.movie})} >
@@ -43,8 +52,8 @@ class MovieRow_ extends React.Component {
                     
                     <ImageBackground source={{ uri: this.props.movie.img }} style={styles.image} >
                         <View style={{justifyContent: 'center', alignItems: 'center',backgroundColor:"#2c3e5094",flexDirection:"row",color:"white"}}>
-                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Rating : {this.props.movie.rating ? this.props.movie.rating : "-"}</Text>
-                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Quality : {this.props.movie.quality ? this.props.movie.quality : "-"}</Text>
+                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Rating : {rating}</Text>
+                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Quality : {quality}</Text>
                         </View>
                     </ImageBackground>
 
@@ -85,7 +94,6 @@ class MovieRow_ extends React.Component {
             }else{
               favorites = {};
             }
-            console.log(Object.values(favorites))
             return Object.values(favorites);
         }
         getMoviesList(cat){
@@ -94,8 +102,9 @@ class MovieRow_ extends React.Component {
             }
             if(cat=="Favorites"){
                 this.getMovies_favorites().then(favs=>{
-                    this.setState({"mlist":favs});
+                    this.setState({"mlist":favs.reverse()});
                 });
+                return ;
             }
             const page = (cat[0]=="/")?-1:this.state.page;
             const cat_page= cat+"_"+page;
@@ -167,6 +176,10 @@ class MovieRow_ extends React.Component {
                             renderItem={({ item }) => <MovieRow
                             movie={item}
                             />}
+                            keyExtractor={ (item,i) => {
+                                if(!item){return i+"";}
+                                return item.link ? item.link : i+"" ;
+                              } }
                         />
                 );
             }

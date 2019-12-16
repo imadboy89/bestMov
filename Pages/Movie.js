@@ -157,6 +157,7 @@ class MovieScreen extends React.Component {
       const {params = {}} = navigation.state;
       return (
         <View style={{flex:1,flexDirection:"row"}} >
+          { params.movie_title && params.movie_title!="Movie" && params.movie_title.trim()!="" &&
           <Icon
             name={(params.isFav)?"heart":"heart-o"}
             style={[buttons_style.button,{color:"#e74c3c"}]}
@@ -164,6 +165,7 @@ class MovieScreen extends React.Component {
             onPress={ () => params.setFav(!params.isFav) }
             title="Save"
           />
+          }
           <Icon
             style={buttons_style.button}
 
@@ -239,6 +241,7 @@ class MovieScreen extends React.Component {
       favorites = {};
     }
     if(isFav){
+      console.log(this.state.movie);
       favorites[this.link] = this.state.movie;
     }else{
       delete favorites[this.link];
@@ -272,6 +275,7 @@ class MovieScreen extends React.Component {
       if (link in movies_local){
         this.setMovie(movies_local[link],link,false);
       }else{
+        if(!link){return false;}
         this.MAPI.getMovie(link).then(
           data=>{
             this.setMovie(data,link);

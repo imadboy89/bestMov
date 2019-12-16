@@ -102,6 +102,8 @@ class MoviesAPI{
         }
     }   
     getMovie(link){
+        if(!link){return false;}
+        console.log("_",link,"_");
         return this.API.API_get(link,-1).then(
             data=>{
                 let movie = {};
@@ -196,7 +198,12 @@ class MoviesAPI{
                 let movies = [];
                 let rootNode;
                 if (data instanceof Object && "html" in data ){
-                    rootNode = DomSelector(data["html"]);
+                    try {
+                        rootNode = DomSelector(data["html"]);
+                    } catch (error) {
+                        console.log("_",data,"_");
+                        return [];
+                    }
                 }else{
                     rootNode = DomSelector(data);
                     rootNode = rootNode.getElementsByClassName("movies")[0];
