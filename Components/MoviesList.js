@@ -166,13 +166,17 @@ class MovieRow_ extends React.Component {
             );
         }
         getDl = async ()=>{
+            const mlist = this.state.mlist ;
+            this.setState({"mlist":[]});
+            console.log("getDl");
             downloaded  = await AsyncStorage.getItem("downloaded");
             if(downloaded){
               downloaded = JSON.parse(downloaded);
             }else{
               downloaded = [];
             }
-            this.setState({downloaded:downloaded});
+            this.setState({downloaded:downloaded , "mlist": mlist});
+
           };
         render() {
             if(this.cat != this.props.cat){
@@ -192,7 +196,7 @@ class MovieRow_ extends React.Component {
                             data={this.state.mlist}
                             renderItem={({ item }) => <MovieRow
                             movie={item}
-                            isWatched={ this.state.downloaded && typeof this.state.downloaded == "object" && this.state.downloaded.indexOf(item.link.split("?ref")[0])<0 ? false : true}
+                            isWatched={ this.state.downloaded && typeof this.state.downloaded == "object" && item.link && item.link.split && this.state.downloaded.indexOf(item.link.split("?ref")[0])<0 ? false : true}
                             />}
                             keyExtractor={ (item,i) => {
                                 if(!item){return i+"";}
