@@ -113,6 +113,7 @@ class MovieScreen extends React.Component {
       movie :false,
       isFav:false,
       modalVisible:false,
+      downloaded:[],
     };
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
@@ -122,6 +123,14 @@ class MovieScreen extends React.Component {
     this.current_ind = -1;
 
     this.getingMovie = false;
+
+
+    this.didBlurSubscription = this.props.navigation.addListener(
+      'didFocus',
+      payload => {
+        this.getDl();
+      }
+    );
   }
   //####################### BACK HANDLER ###################################
   componentWillMount() {BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);console.log("willmount");}
@@ -167,7 +176,7 @@ class MovieScreen extends React.Component {
           />
           }
           <Icon
-            style={buttons_style.button}
+            style={[buttons_style.button,{marginRight:10}]}
 
             name="refresh"
             onPress={ () => params.deleteMovieCache() }
@@ -186,6 +195,7 @@ class MovieScreen extends React.Component {
       if(quality){
         this.props.navigation.navigate('WebViewer',{
           movie_link:dl_link, 
+          movie_url:this.link,
           movie_img:this.state.movie.img,
           movie_title:this.getparam("title"),
           is_dl:is_dl,quality:quality,
@@ -193,7 +203,8 @@ class MovieScreen extends React.Component {
         });
       }else{
         this.props.navigation.navigate('Watch_WV',{
-          movie_link:dl_link, 
+          movie_link:dl_link,
+          movie_url:this.link, 
           movie_title:this.getparam("title"),
           history:this.history
         });
@@ -233,6 +244,15 @@ class MovieScreen extends React.Component {
       await AsyncStorage.setItem("movies", JSON.stringify(movies_local) );
     }
   }
+  getDl = async ()=>{
+    downloaded  = await AsyncStorage.getItem("downloaded");
+    if(downloaded){
+      downloaded = JSON.parse(downloaded);
+    }else{
+      downloaded = [];
+    }
+    this.setState({downloaded:downloaded});
+  };
   setFav = async (isFav)=>{
     let favorites  = await AsyncStorage.getItem("favorites");
     if(favorites){
@@ -241,7 +261,6 @@ class MovieScreen extends React.Component {
       favorites = {};
     }
     if(isFav){
-      console.log(this.state.movie);
       favorites[this.link] = this.state.movie;
     }else{
       delete favorites[this.link];
@@ -331,6 +350,7 @@ class MovieScreen extends React.Component {
     );
   }
   render() {
+
     let link_last = "";
     let props = (!this.state.movie)? loader : Object.keys(this.state.movie).map( key =>{
       value = this.state.movie[key] ;
@@ -363,11 +383,12 @@ class MovieScreen extends React.Component {
 
       }else if(key=="episode" || key=="season"){
         let dl = value.map( (ep_se,vv) =>{
+          
           return (
             <Button style={styles.btn_dl} 
             key={Math.random()} 
             title={ep_se.title}
-            color="#2980b9"
+            color= { this.state.downloaded.indexOf(ep_se.url.split("?ref")[0])<0 ? "#2980b9" :"#2e5671"  }
             onPress={() => {
                 this.setState({"movie":false});
                 this.getMovie(ep_se.url);

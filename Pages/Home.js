@@ -20,6 +20,7 @@ class HomeScreen extends React.Component {
       {'name':'Favorites','uri':'Favorites',},
       {'name':'Top Movies','uri':'movies/top',},
       {'name':'Top Series','uri':'tv/top',},
+      {'name':'Popular','uri':'movies/popular',},
       {'name':'SCI-FI','uri':'movies/scifi',},
       {'name':'Comedy','uri':'movies/comedy',},
       {'name':'Series','uri':'tv',},
@@ -42,6 +43,7 @@ class HomeScreen extends React.Component {
       {'name':'Animation','uri':'movies/animation',},
       {'name':'Documentary','uri':'movies/documentary',},
       {'name':'War','uri':'movies/war',},
+      {'name':'Spanish','uri':'movies/spanish',},
       ]
       this.q = "";
 
@@ -133,7 +135,7 @@ class HomeScreen extends React.Component {
       const {params = {}} = navigation.state;
       return (
           <Icon
-            style={buttons_style.button}
+            style={[buttons_style.button,{marginRight:10}]}
 
             name = "search"
             onPress={ () => params.openModal() }

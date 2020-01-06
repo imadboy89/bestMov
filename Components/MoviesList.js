@@ -43,17 +43,18 @@ class MovieRow_ extends React.Component {
 
         let quality = this.props.movie.quality ? this.props.movie.quality : "-";
         quality = quality=="-" && this.props.movie[" الجودة"] ? this.props.movie[" الجودة"].trim().split(" ")[0] : quality ;
+        const color = (this.props.isWatched) ? "#2980b9" : "white" ;
         return (
             <TouchableHighlight 
             onPress={() => this.props.navigation.navigate('Movie',{movie:this.props.movie})} >
             <View  style={styles.container} >
                 { this.props.movie.img!="" &&
-                <View style={{flex:1,backgroundColor:"black",borderStyle:"solid",borderWidth:1,borderColor:"white"}}>
+                <View style={{flex:1,backgroundColor:"black",borderStyle:"solid",borderWidth:1,borderColor: color }}>
                     
                     <ImageBackground source={{ uri: this.props.movie.img }} style={styles.image} >
-                        <View style={{justifyContent: 'center', alignItems: 'center',backgroundColor:"#2c3e5094",flexDirection:"row",color:"white"}}>
-                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Rating : {rating}</Text>
-                            <Text style={{width:"49%",fontSize:18,color:"white"}}>Quality : {quality}</Text>
+                        <View style={{justifyContent: 'center', alignItems: 'center',backgroundColor:"#2c3e5094",flexDirection:"row",color:color}}>
+                            <Text style={{width:"49%",fontSize:18,color:color}}>Rating : {rating}</Text>
+                            <Text style={{width:"49%",fontSize:18,color:color}}>Quality : {quality}</Text>
                         </View>
                     </ImageBackground>
 
@@ -86,6 +87,13 @@ class MovieRow_ extends React.Component {
             this.cat = "";
             this.MAPI = new MoviesAPI();
             this.MAPI.API = this.props.API;
+
+            this.didBlurSubscription = this.props.navigation.addListener(
+                'didFocus',
+                payload => {
+                  this.getDl();
+                }
+              );
           }
           getMovies_favorites = async ()=>{
             let favorites  = await AsyncStorage.getItem("favorites");
@@ -157,6 +165,15 @@ class MovieRow_ extends React.Component {
                 <Text style={{height:600,color:"white"}} >There is no Results for  [{this.q}] .</Text>
             );
         }
+        getDl = async ()=>{
+            downloaded  = await AsyncStorage.getItem("downloaded");
+            if(downloaded){
+              downloaded = JSON.parse(downloaded);
+            }else{
+              downloaded = [];
+            }
+            this.setState({downloaded:downloaded});
+          };
         render() {
             if(this.cat != this.props.cat){
                 this.state.mlist = false;
@@ -175,6 +192,7 @@ class MovieRow_ extends React.Component {
                             data={this.state.mlist}
                             renderItem={({ item }) => <MovieRow
                             movie={item}
+                            isWatched={ this.state.downloaded && typeof this.state.downloaded == "object" && this.state.downloaded.indexOf(item.link.split("?ref")[0])<0 ? false : true}
                             />}
                             keyExtractor={ (item,i) => {
                                 if(!item){return i+"";}
@@ -246,4 +264,4 @@ class MovieRow_ extends React.Component {
         }
     
 
-export default MoviesListview;
+export default withNavigation(MoviesListview);

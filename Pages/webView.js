@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch,BackHandler  } from 'react-native';
+import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch,BackHandler,AsyncStorage  } from 'react-native';
 import API from "../Libs/API"
 import {header_style, buttons_style} from '../Styles/styles';
 import ShareBtn from "../Components/share";
@@ -72,7 +72,7 @@ const styles = StyleSheet.create(
           };
         }
         _onNavigationStateChange(webview){
-          console.log("webviewADS ",webview.url);
+          //console.log("webviewADS ",webview.url);
         }
         render(){
           
@@ -104,6 +104,7 @@ class WebViewScreen extends React.Component {
         super(props);
         
         this.url = this.props["navigation"].getParam("movie_link") ;
+        this.movie_url = this.props["navigation"].getParam("movie_url") ;
         this.movie_title = this.props["navigation"].getParam("movie_title") ;
         this.is_dl = this.props["navigation"].getParam("is_dl") ;
         this.quality = this.props["navigation"].getParam("quality") ;
@@ -238,6 +239,22 @@ class WebViewScreen extends React.Component {
   }
   //##########################################################
 
+  setDl = async ()=>{
+    let downloaded  = await AsyncStorage.getItem("downloaded");
+    if(downloaded){
+      downloaded = JSON.parse(downloaded);
+    }else{
+      downloaded = [];
+    }
+    if(this.movie_url && this.movie_url.split("?ref")[0]){
+      downloaded.push(this.movie_url.split("?ref")[0]) ;
+      await AsyncStorage.setItem("downloaded",JSON.stringify(downloaded));
+    }
+    
+    console.log("saving dl",this.movie_url.split("?ref")[0]);
+    
+  };
+
 
     componentDidMount(){
       API_ =  new API() ;
@@ -269,7 +286,7 @@ class WebViewScreen extends React.Component {
               title="Open"
             />
             <Icon 
-              style={buttons_style.button}
+              style={[buttons_style.button,{marginRight:10}]}
               size ={20}
               color="#ecf0f1"
 
@@ -298,6 +315,7 @@ class WebViewScreen extends React.Component {
           }
           
         this.API_.saveLink(link, this.movie_img).then(data=>{
+          this.setDl();
           if (data.trim()==""){
             this.API_.getConfigs_local("links_manager").then(config_link=>{
               this.setState({
@@ -333,7 +351,7 @@ class WebViewScreen extends React.Component {
           if ("href" in openInfo){
             //if(openInfo["url"]!=this.WebView_url && openInfo["url"]=="/cv.php"){
               const ads_url = (openInfo["url"][0]=="/") ? "http://"+openInfo["host"]+openInfo["url"] : openInfo["url"];
-              console.log("set state ads",ads_url);
+              //console.log("set state ads",ads_url);
               this.setState({ads_url:ads_url});
               //this.setState({WebView_ads_url:url_ads})
               
@@ -345,18 +363,18 @@ class WebViewScreen extends React.Component {
           
         }
       }
-      console.log(data.nativeEvent.data);
+      //console.log(data.nativeEvent.data);
     }
 
     _onNavigationStateChange(webViewState){
       this.WebView.postMessage("autoRetry="+( (this.state.autoRetry)?1:0 ));
-      console.log("wbv UPDATES",webViewState.url,);
+      //console.log("wbv UPDATES",webViewState.url,);
       this.WebView_url  = webViewState.url;
       const current_dom = webViewState.url.split("/")[2] ;
       if(current_dom!=this.state.text_status && !this.state.text_status.includes("Blocked")){
         this.setState({text_status:webViewState.url.split("/")[2]});
       }
-      }
+    }
     render_WebView(){
 
       return (!this.state.wvVisible) ? null :(
@@ -445,7 +463,7 @@ class WebViewScreen extends React.Component {
         </View>      );
     }
     render() {
-      console.log("render WBVWS")
+      
       let ads = (this.state.ads_url=="")?null : (
         <WebView_ads url={this.state.ads_url} />
       );
