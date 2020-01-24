@@ -246,12 +246,13 @@ class WebViewScreen extends React.Component {
     }else{
       downloaded = [];
     }
-    if(this.movie_url && this.movie_url.split("?ref")[0]){
-      downloaded.push(this.movie_url.split("?ref")[0]) ;
+    const dl_uri_ = this.movie_url.match(/(https?:\/\/[^\/]+)?\/([^\?]+)/i);
+    
+    if(dl_uri_ && dl_uri_.length>=3){
+      downloaded.push(dl_uri_[2]) ;
       await AsyncStorage.setItem("downloaded",JSON.stringify(downloaded));
     }
     
-    console.log("saving dl",this.movie_url.split("?ref")[0]);
     
   };
 

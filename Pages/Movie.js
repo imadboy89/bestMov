@@ -388,7 +388,14 @@ class MovieScreen extends React.Component {
             <Button style={styles.btn_dl} 
             key={Math.random()} 
             title={ep_se.title}
-            color= { this.state.downloaded.indexOf(ep_se.url.split("?ref")[0])<0 ? "#2980b9" :"#2e5671"  }
+            color= { 
+            this.state.downloaded && typeof this.state.downloaded == "object" && 
+            ep_se.url && ep_se.url.split && 
+            ep_se.url.match(/(https?:\/\/[^\/]+)?\/([^\?]+)/i) && 
+            ep_se.url.match(/(https?:\/\/[^\/]+)?\/([^\?]+)/i).length>=3 &&
+            this.state.downloaded.indexOf(ep_se.url.match(/(https?:\/\/[^\/]+)?\/([^\?]+)/i)[2] )==-1
+
+            ? "#2980b9" :"#2e5671"  }
             onPress={() => {
                 this.setState({"movie":false});
                 this.getMovie(ep_se.url);

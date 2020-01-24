@@ -116,11 +116,11 @@ class MovieRow_ extends React.Component {
             }
             const page = (cat[0]=="/")?-1:this.state.page;
             const cat_page= cat+"_"+page;
+
             this.getMoviesList_local(cat_page).then(data => {
                 if(data){
                     this.setState({"mlist":data});
                 }else{
-                    
                     this.MAPI.getMovies(cat,page).then(
                       data=>{
                         this.setMoviesList_local(cat_page,data);
@@ -167,15 +167,30 @@ class MovieRow_ extends React.Component {
         }
         getDl = async ()=>{
             const mlist = this.state.mlist ;
-            this.setState({"mlist":[]});
+            //this.setState({"mlist":[]});
             console.log("getDl");
             downloaded  = await AsyncStorage.getItem("downloaded");
+            let isOldFormat=false;
             if(downloaded){
               downloaded = JSON.parse(downloaded);
+              for(let i=0; i<downloaded.length;i++){
+                  if( ! downloaded[i] || downloaded[i]==null || downloaded[i] == undefined || downloaded[i] == ""){
+                      continue;
+                  }
+                const dl_uri_ = downloaded[i].match(/https?:\/\/[^\/]+\/([^\?]+)/i);
+                if(dl_uri_ && dl_uri_.length>=2){
+                    downloaded[i] = dl_uri_[1];
+                    isOldFormat = true;
+                }else if (downloaded[i] && downloaded[i].length>0 &&downloaded[i][0]=="/"){
+                    downloaded[i] = downloaded[i].slice(1);
+                    isOldFormat = true;
+                }
+              }
             }else{
               downloaded = [];
             }
-            this.setState({downloaded:downloaded , "mlist": mlist});
+            if(isOldFormat){ await AsyncStorage.setItem("downloaded",JSON.stringify(downloaded)); }
+            this.setState({downloaded:downloaded});
 
           };
         render() {
@@ -195,8 +210,15 @@ class MovieRow_ extends React.Component {
                     <FlatList
                             data={this.state.mlist}
                             renderItem={({ item }) => <MovieRow
-                            movie={item}
-                            isWatched={ this.state.downloaded && typeof this.state.downloaded == "object" && item.link && item.link.split && this.state.downloaded.indexOf(item.link.split("?ref")[0])<0 ? false : true}
+                                movie={item}
+                                isWatched={
+                                    this.state.downloaded && typeof this.state.downloaded == "object" && 
+                                    item.link && item.link.split && 
+                                    item.link.match(/\/?([^\?]+)/i) && 
+                                    item.link.match(/\/?([^\?]+)/i).length>=2 &&
+                                    this.state.downloaded.indexOf(item.link.match(/\/?([^\?]+)/i)[1] )==-1
+                                    ? false : true
+                                }
                             />}
                             keyExtractor={ (item,i) => {
                                 if(!item){return i+"";}
