@@ -3,7 +3,8 @@ import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch,BackHandler,Asyn
 import API from "../Libs/API"
 import {header_style, buttons_style} from '../Styles/styles';
 import ShareBtn from "../Components/share";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome';_
+
 const styles = StyleSheet.create(
     {
       container: {
@@ -92,7 +93,8 @@ const styles = StyleSheet.create(
                 this.state.url = e.nativeEvent.url;
               }
             }
-            userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+            //userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+            userAgent='Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
             />
   
           );
@@ -126,13 +128,15 @@ class WebViewScreen extends React.Component {
           movie_dl_link :"",
           movie_img :"",
         };
-        
+        this.useragent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36";
         //this.fullScreenCmd = '$(".vjs-mute-control").click();alert($(".vjs-mute-control").text());'
         this.API_ =  new API() ;
         this.API_.getConfigs_local().then(values=>{
           this.state.webView_visible = values["webView_visible"];
           this.state.links_manager   = values["links_manager"];
         });
+        this.egy_retries = 0;
+        console.log(this.quality);
         this.injectedJS = `
         /*
         window.onbeforeunload = function(event) {
@@ -149,6 +153,8 @@ class WebViewScreen extends React.Component {
             alert(" win.po "+error);
           }
         }
+        //alert("msg= adad");
+        window_open_ori = window.open;
        window.open = function(url){
          let openInfo = {};
          openInfo["url"] = url;
@@ -157,7 +163,6 @@ class WebViewScreen extends React.Component {
         log(JSON.stringify(openInfo) ); 
         return {"closed":false,close:function(){return true}};
        }
-       
       let autoRetry = 1;
         document.addEventListener("message", function(data) {
           const data_ = data.data.split("=");
@@ -174,11 +179,20 @@ class WebViewScreen extends React.Component {
         
 
         function GoToVids(){
+          log("msg= GoToVids");
           if($(".dls_table td.tar a.g ").length && $($(".dls_table td.tar a.g ")[0]).attr("data-url")){
             $(".dls_table td.tar a.g ").each(function(k,v){
-              
+              log("msg= "+ $($(v).parent().parent().find("td")[1]).text().trim() + "," + $($(v).parent().parent().find("td")[1]).text().trim() == quality);
               if( $($(v).parent().parent().find("td")[1]).text().trim() == quality){
-                document.location = $(v).attr("data-url");
+                let link = $(v).attr("data-url");//.replace("&auth","");
+                if(link.indexOf("&auth=")>-1){
+                  log("msg= auth");
+                  setTimeout(function() { 
+                    document.location = link;
+                  }, 3000);
+                  return false;
+                }
+                document.location = link;
                 return;
               }
            });
@@ -213,7 +227,7 @@ class WebViewScreen extends React.Component {
             GoToVids(); 
             getlink(); 
           
-          }, 100);
+          }, 1000);
           
         });
       `;
@@ -303,7 +317,13 @@ class WebViewScreen extends React.Component {
     });
     onMessage(data){
       const data_ = data.nativeEvent.data.split("=");
-      if (data_[0] == "_dl_"){
+      if (data_[0] == "msg"){
+        console.log(data_[1]);
+        if(data_[1].trim()=="egy_retries_aug"){
+          this.egy_retries+=1;
+        }
+      }
+      else if (data_[0] == "_dl_"){
         let link = data.nativeEvent.data.slice(5);
           this.setState({ads_url : ""});
           if(this.state.links_manager=="Not Active"){
@@ -369,6 +389,7 @@ class WebViewScreen extends React.Component {
 
     _onNavigationStateChange(webViewState){
       this.WebView.postMessage("autoRetry="+( (this.state.autoRetry)?1:0 ));
+      this.WebView.postMessage("egy_retries="+ this.egy_retries );
       //console.log("wbv UPDATES",webViewState.url,);
       this.WebView_url  = webViewState.url;
       const current_dom = webViewState.url.split("/")[2] ;
@@ -397,7 +418,9 @@ class WebViewScreen extends React.Component {
             this.WebView = c;
             //console.log(this.originWhitelist);
           }}
-          userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+          //userAgent='Mozilla/5.0 (Linux; Android 9.0.0;) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36'
+          //userAgent='Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+          userAgent = {this.useragent}
           />
       );
     }

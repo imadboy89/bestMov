@@ -306,6 +306,7 @@ class MovieScreen extends React.Component {
       await AsyncStorage.setItem("movies","{}");
       this.MAPI.getMovie(link).then(
         data=>{
+          console.log(data);
           this.setMovie(data,link);
         }
       );

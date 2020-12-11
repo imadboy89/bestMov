@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "best Movies for free",
+    "name": "best Movies for free ",
     "slug": "BestMov",
     "privacy": "public",
     "sdkVersion": "35.0.0",
@@ -18,7 +18,7 @@
       "backgroundColor": "#000000"
     },
     "updates": {
-      "fallbackToCacheTimeout": 5 
+      "fallbackToCacheTimeout": 5
     },
     "assetBundlePatterns": [
       "**/*"
@@ -29,6 +29,7 @@
     "android": {
       "package": "com.imadboss.bestmovies"
     },
-    "description": "final build"
+    "description": "final build 05-11   3",
+    "scheme": "bestmov"
   }
 }

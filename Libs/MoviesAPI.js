@@ -205,7 +205,13 @@ class MoviesAPI{
                         return [];
                     }
                 }else{
-                    rootNode = DomSelector(data);
+                    try {
+                        rootNode = DomSelector(data);
+                    } catch (error) {
+                        console.log("re-try");
+                        return getMovies(cat,page) ;
+                    }
+                    
                     rootNode = rootNode.getElementsByClassName("movies")[0];
                 }
 
