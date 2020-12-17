@@ -3,7 +3,6 @@
     "name": "best Movies for free ",
     "slug": "BestMov",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
       "android",
@@ -18,7 +17,7 @@
       "backgroundColor": "#000000"
     },
     "updates": {
-      "fallbackToCacheTimeout": 5 
+      "fallbackToCacheTimeout": 5
     },
     "assetBundlePatterns": [
       "**/*"
