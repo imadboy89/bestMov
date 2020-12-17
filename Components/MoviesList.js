@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button,View, Text, StyleSheet, ImageBackground , FlatList, TouchableHighlight,AsyncStorage} from 'react-native';
+import { Button,View, Text, StyleSheet, ImageBackground , FlatList, TouchableHighlight} from 'react-native';
 import { withNavigation } from 'react-navigation';
 import loader from "../Components/Loader"
 import MoviesAPI from "../Libs/MoviesAPI"
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-community/async-storage';
 const styles = StyleSheet.create({
     container: {
         marginTop:20,
