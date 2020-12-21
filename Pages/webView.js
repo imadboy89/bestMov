@@ -1,9 +1,11 @@
 import React from 'react';
-import {  Linking ,WebView ,StyleSheet, View,Text,Button,Switch,BackHandler,AsyncStorage  } from 'react-native';
+import {  Linking  ,StyleSheet, View,Text,Button,Switch,BackHandler  } from 'react-native';
 import API from "../Libs/API"
 import {header_style, buttons_style} from '../Styles/styles';
 import ShareBtn from "../Components/share";
-import Icon from 'react-native-vector-icons/FontAwesome';_
+import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-community/async-storage';
+import { WebView } from 'react-native-webview';
 
 const styles = StyleSheet.create(
     {
@@ -105,12 +107,12 @@ class WebViewScreen extends React.Component {
     constructor(props) {
         super(props);
         
-        this.url = this.props["navigation"].getParam("movie_link") ;
-        this.movie_url = this.props["navigation"].getParam("movie_url") ;
-        this.movie_title = this.props["navigation"].getParam("movie_title") ;
-        this.is_dl = this.props["navigation"].getParam("is_dl") ;
-        this.quality = this.props["navigation"].getParam("quality") ;
-        this.movie_img = this.props["navigation"].getParam("movie_img") ;
+        this.url = this.props.route.params.movie_link ;//.getParam("movie_link") ;
+        this.movie_url = this.props.route.params.movie_url;
+        this.movie_title = this.props.route.params.movie_title ;
+        this.is_dl = this.props.route.params.is_dl ;
+        this.quality = this.props.route.params.quality ;
+        this.movie_img = this.props.route.params.movie_img ;
         //console.log("WBV ON constructor",  this.url)
         if(!this.url || this.url == undefined || this.url[0]=="/"){
           this.props.navigation.goBack();
@@ -245,7 +247,7 @@ class WebViewScreen extends React.Component {
   componentWillUnmount() {BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);}
   handleBackButtonClick() {
     //this.props.navigation.goBack(null);
-    const history = this.props["navigation"].getParam("history");
+    const history = this.props.route.params.history;
     this.props.navigation.navigate('Movie',{
       "movie" : history[history.length-1],
       history : history});
@@ -272,49 +274,49 @@ class WebViewScreen extends React.Component {
 
 
     componentDidMount(){
-      API_ =  new API() ;
+      let API_ =  new API() ;
       this.props.navigation.setParams({
         movie_link: this.state.movie_link,
         movie_title: this.state.movie_title,
         API : API_,
        })
-    }
-    static navigationOptions =  ({ navigation  }) => ({
-      headerStyle: header_style.header,
-      headerTitle: a=>{
-        const {state} = navigation;
-        return (<Text style={header_style.title}>{state.params.movie_title}</Text>)
-        },
-        headerRight: a=>{
-        const {state} = navigation;
-        return (
-          <View style={header_style.container}>
-            <Icon 
-              style={buttons_style.button}
-              size ={20}
-              color="#3498db"
-              
-              name="external-link" 
-              onPress={o => {
-                Linking.openURL(state.params.movie_link);
-              }}
-              title="Open"
-            />
-            <Icon 
-              style={[buttons_style.button,{marginRight:10}]}
-              size ={20}
-              color="#ecf0f1"
 
-              name="save" 
-              onPress={o => {
-                Linking.openURL(state.params.API.links_manager +"?action=save&link="+ state.params.movie_link+"&name="+state.params.movie_title);
-              }}
-              title="Save"
-            />
-        </View>
-        )
-        },
-    });
+
+       this.props.navigation.setOptions({
+        headerTitle: a=>{
+          return (<Text style={header_style.title}>{this.state.movie_title}</Text>)
+          },
+          headerRight: a=>{
+          return (
+            <View style={header_style.container}>
+              <Icon 
+                style={buttons_style.button}
+                size ={20}
+                color="#3498db"
+                
+                name="external-link" 
+                onPress={o => {
+                  Linking.openURL(this.state.movie_link);
+                }}
+                title="Open"
+              />
+              <Icon 
+                style={[buttons_style.button,{marginRight:10}]}
+                size ={20}
+                color="#ecf0f1"
+  
+                name="save" 
+                onPress={o => {
+                  Linking.openURL(API_.links_manager +"?action=save&link="+ this.state.movie_link+"&name="+this.state.movie_title);
+                }}
+                title="Save"
+              />
+          </View>
+          )
+          },
+       });
+    }
+
     onMessage(data){
       const data_ = data.nativeEvent.data.split("=");
       if (data_[0] == "msg"){
@@ -399,7 +401,7 @@ class WebViewScreen extends React.Component {
     }
     render_WebView(){
 
-      return (!this.state.wvVisible) ? null :(
+      let webv =  (!this.state.wvVisible) ? null :(
           <WebView 
           style={styles.WebViewStyle }
           source={{ uri: this.state.movie_link }}
@@ -423,6 +425,8 @@ class WebViewScreen extends React.Component {
           userAgent = {this.useragent}
           />
       );
+
+      return this.API_.isWeb ? <iframe src={this.API_.proxy+this.state.movie_link} style={{flex:1,backgroundColor: "#000",borderWidth:0}} seamless/> :webv ;
     }
     watch(){
 
@@ -492,7 +496,7 @@ class WebViewScreen extends React.Component {
         <WebView_ads url={this.state.ads_url} />
       );
         if (this.state.webView_visible==false){
-          hidder = (
+          const hidder = (
             <View style={styles.hidderStyle}></View>
           );
         }

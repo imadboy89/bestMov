@@ -123,6 +123,12 @@ class MoviesAPI{
                         if (td.length <= 1 ){
                             continue
                         }
+                        if("التقييم" == this.getTextAll(td[0]).trim()){
+                            movie[ this.getTextAll(td[0]) ] =  this.getTextAll(td[1].getElementsByTagName("strong")[0]);
+                            movie[ this.getTextAll(td[0]) ] += "   | صوت "+ this.getTextAll(td[1].getElementsByClassName("hide")[0]);
+                            
+                            continue;
+                        }
                         movie[ this.getTextAll(td[0]) ] = this.getTextAll(td[1]);
                     }
                     //$($(".mbox .bdb strong")[1]).text()
@@ -169,8 +175,8 @@ class MoviesAPI{
                                 if( td.length >= 2){
                                     let dl_ = {};
                                     for (var j=0;j<movie_h.length;j++){
-                                        a_link = td[j].getElementsByClassName("g") ;
-                                        value = td[j] ;
+                                        const a_link = td[j].getElementsByClassName("g") ;
+                                        let value = td[j] ;
                                         if (a_link && a_link.length> 0){
                                             value = a_link[0].attributes["data-url"];
                                             dl_["dl_link"] = value;
@@ -221,10 +227,11 @@ class MoviesAPI{
                     let movie = {};
                     movie["link"]    = ahrefs[i].attributes.href;
                     movie["rating"]  = this .getText(ahrefs[i].getElementsByClassName("rating")[0]);
-                    movie["img"]     = "https:"+ahrefs[i].getElementsByTagName("img")[0].attributes.src;
+                    movie["img"]     = ahrefs[i].getElementsByTagName("img")[0].attributes.src;
                     movie["quality"] = this .getText(ahrefs[i].getElementsByClassName("ribbon")[0]);
                     movie["title"]   = this .getText(ahrefs[i].getElementsByClassName("title")[0]);
                     movie["key"]     = movie["title"]
+                    movie["img"]     = movie["img"].slice(0,2)=="//" ?"https:"+movie["img"] : movie["img"];
                     movies.push(movie);
                 }
                 

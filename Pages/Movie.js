@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage,ScrollView,BackHandler ,Image,Linking,Modal,TouchableHighlight  } from 'react-native';
+import { StyleSheet, Text, View, Button,ScrollView,BackHandler ,Image,Linking,Modal,TouchableHighlight  } from 'react-native';
 import MoviesAPI from "../Libs/MoviesAPI"
 import loader from "../Components/Loader"
 import {header_style,buttons_style} from "../Styles/styles";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,6 +112,7 @@ class MovieScreen extends React.Component {
     this.state = {
       output:"walo",
       movie :false,
+      movie_title:"Movie",
       isFav:false,
       modalVisible:false,
       downloaded:[],
@@ -118,7 +120,7 @@ class MovieScreen extends React.Component {
     this.MAPI = new MoviesAPI();
     this.link = this.getparam("link")
     this.getMovie(this.link);
-    this.history = this.props["navigation"].getParam("history") ? this.props["navigation"].getParam("history") : [];
+    this.history = this.props.route.params.history ? this.props.route.params.history : [];
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.current_ind = -1;
 
@@ -156,22 +158,21 @@ class MovieScreen extends React.Component {
       isFav : this.state.isFav,
 
      });
+     this.props.navigation.setOptions(this.navigationOptions);
   }
-  static navigationOptions =  ({ navigation  }) => ({
+  navigationOptions = {
     headerStyle: header_style.header,
     headerTitle: a=>{
-        const {state} = navigation;
-        return (<Text style={header_style.title}>{navigation.getParam("movie_title")}</Text>)},
+        return (<Text style={header_style.title}>{this.state.movie_title}</Text>)},
     headerRight: a=>{
-      const {params = {}} = navigation.state;
       return (
-        <View style={{flex:1,flexDirection:"row"}} >
-          { params.movie_title && params.movie_title!="Movie" && params.movie_title.trim()!="" &&
+        <View style={{flex:1,flexDirection:"row",alignItems:"center"}} >
+          { this.state.movie_title && this.state.movie_title!="Movie" && this.state.movie_title.trim()!="" &&
           <Icon
-            name={(params.isFav)?"heart":"heart-o"}
+            name={(this.state.isFav)?"heart":"heart-o"}
             style={[buttons_style.button,{color:"#e74c3c"}]}
             
-            onPress={ () => params.setFav(!params.isFav) }
+            onPress={ () => this.setFav(!this.state.isFav) }
             title="Save"
           />
           }
@@ -179,17 +180,17 @@ class MovieScreen extends React.Component {
             style={[buttons_style.button,{marginRight:10}]}
 
             name="refresh"
-            onPress={ () => params.deleteMovieCache() }
+            onPress={ () => this.deleteMovieCache() }
             title="reFresh"
           />
         </View>
       )
       },
 
-  });
+  };
 
   getVid(dl_link, quality){
-    is_dl   = (dl_link[0]=="/") ? true : false;
+    const is_dl   = (dl_link[0]=="/") ? true : false;
     dl_link = (dl_link[0]=="/") ? this.MAPI.API.domain + dl_link : dl_link ;
     if(this.state.movie instanceof Object){
       if(quality){
@@ -235,7 +236,8 @@ class MovieScreen extends React.Component {
     //AsyncStorage.setItem("last_history", JSON.stringify(this.history) )
     this.getFav();
     this.setState({"movie":data});
-    this.props.navigation.setParams({movie_title: data.title, });
+    this.state.movie_title = data.title;
+    this.props.navigation.setOptions(this.navigationOptions);
     // local storage
     if (setlocal){
       let movies_local = await AsyncStorage.getItem("movies")
@@ -268,8 +270,9 @@ class MovieScreen extends React.Component {
 
     await AsyncStorage.setItem("favorites",JSON.stringify(favorites));
 
-    this.props.navigation.setParams({isFav:isFav});
+    
     this.setState({isFav:isFav});
+    this.props.navigation.setOptions(this.navigationOptions);
   };
   getFav = async ()=>{
     let favorites  = await AsyncStorage.getItem("favorites");
@@ -277,7 +280,7 @@ class MovieScreen extends React.Component {
       favorites = JSON.parse(favorites);
       if(this.link in favorites){
         this.setState({isFav:true});
-        this.props.navigation.setParams({isFav:true});
+        this.props.navigation.setOptions(this.navigationOptions);
       }
     }else{
       await AsyncStorage.setItem("favorites","{}");
@@ -315,6 +318,7 @@ class MovieScreen extends React.Component {
   }
 
   getparam(param){
+    return this.props.route.params.movie[param];
     return this.props["navigation"].getParam("movie")[param] ;
   }
   modal(){
@@ -354,7 +358,7 @@ class MovieScreen extends React.Component {
 
     let link_last = "";
     let props = (!this.state.movie)? loader : Object.keys(this.state.movie).map( key =>{
-      value = this.state.movie[key] ;
+      let value = this.state.movie[key] ;
       if (key=="dl"){
         
           let dl = value.map( (dl_q_table,vv) =>{

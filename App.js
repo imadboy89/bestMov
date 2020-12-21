@@ -9,6 +9,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
+var app_styles = {
+    screenHeader : {
+      headerStyle: {
+        backgroundColor: "#34495e",
+        height: 50,
+        },
+      headerTintColor: "#e67e22",
+      headerTitleStyle: {
+        //fontWeight: 'bold',
+        },
+      headerTitleAlign: 'center'
+      },
+  }
 
 console.disableYellowBox = true;
 const AppNavigator = createStackNavigator();
@@ -16,11 +29,11 @@ const AppNavigator = createStackNavigator();
 function MyStack() {
   return (
     <AppNavigator.Navigator>
-      <AppNavigator.Screen name="Home" component={HomeScreen} />
-      <AppNavigator.Screen name="Movie" component={MovieScreen} />
-      <AppNavigator.Screen name="WebViewer" component={WebViewScreen} />
-      <AppNavigator.Screen name="Settings" component={SettingsScreen} />
-      <AppNavigator.Screen name="Watch_WV" component={Watch_WVScreen} />
+      <AppNavigator.Screen options={app_styles.screenHeader} name="Home" component={HomeScreen} />
+      <AppNavigator.Screen options={app_styles.screenHeader} name="Movie" component={MovieScreen} />
+      <AppNavigator.Screen options={app_styles.screenHeader} name="WebViewer" component={WebViewScreen} />
+      <AppNavigator.Screen options={app_styles.screenHeader} name="Settings" component={SettingsScreen} />
+      <AppNavigator.Screen options={app_styles.screenHeader} name="Watch_WV" component={Watch_WVScreen} />
     </AppNavigator.Navigator>
   );
 }

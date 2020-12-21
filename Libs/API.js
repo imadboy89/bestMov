@@ -1,5 +1,6 @@
 import Base64 from './Base64';
-import { Platform, AsyncStorage } from 'react-native';
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 class API {
   constructor() {
     this.error = null;
@@ -61,13 +62,9 @@ class API {
       'Content-Type': 'application/json',
     };
 
-    return fetch(link, {
-      method: 'GET',
-      headers: headers,
-      mode: 'cors',
-    })
+    return fetch(link)
       .then(response => response.json())
-      .then(responseJson => {
+      .then(responseJson => { 
         this.configs = responseJson;
         for (let i = 0; i < this.configs['action_link'].length; i++) {
           if (this.configs['action_link'][i] == '') {
@@ -153,10 +150,7 @@ class API {
     if (this.usingproxy) {
       link = this.proxy + link;
     }
-    return fetch(link, {
-      method: 'GET',
-      headers: headers,
-    })
+    return fetch(link) 
       .then(res => {
         if (this.usingproxy) {
           this.domain = this.domain;

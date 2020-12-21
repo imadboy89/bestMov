@@ -10,13 +10,13 @@ const header_style = StyleSheet.create({
     title:{
         fontSize:16,
         color:"#e67e22",
-        width:"80%",
+        //width:"80%",
     },
     title_home:{
         fontSize:20,
         color:"#e67e22",
         marginLeft:10,
-        width:"80%",
+        //width:"80%",
     }
  
  });
@@ -31,7 +31,7 @@ const header_style = StyleSheet.create({
 
 
  //export modules
-module.exports = {
+export {
     header_style,
     buttons_style 
 }

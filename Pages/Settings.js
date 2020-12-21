@@ -1,6 +1,6 @@
 import React from 'react';
-import {ToastAndroid, StyleSheet, Text, View, Button, AsyncStorage,ScrollView ,Picker,Switch  } from 'react-native';
-
+import {ToastAndroid, StyleSheet, Text, View, Button,ScrollView ,Picker,Switch  } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 //import { Icon, } from 'react-native-icons';
 const styles = StyleSheet.create({
     container: {
@@ -84,7 +84,7 @@ class SettingsScreen extends React.Component {
         links_manager   : "",
         cache_cleared:false,
       };
-      this.API = this.props["navigation"].getParam("API");
+      this.API = this.props.route.params.API;
 
       this.API.getConfigs_local().then( configs=>{
         this.setState({webView_visible : configs.webView_visible,links_manager   : configs.links_manager});

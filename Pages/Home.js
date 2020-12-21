@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage,TextInput,ScrollView,Modal } from 'react-native';
+import { StyleSheet, Text, View, Button,TextInput,ScrollView,Modal ,TouchableOpacity} from 'react-native';
 import MoviesListview from "../Components/MoviesList"
 import MenuDrawer from 'react-native-side-drawer'
 import API from "../Libs/API"
 import {header_style,buttons_style} from "../Styles/styles";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 class HomeScreen extends React.Component {
@@ -52,16 +53,16 @@ class HomeScreen extends React.Component {
       this.API.getConfigs();
       this.clearCache().then(()=>{
         this.setState({cat:"movies"});
-        this.props.navigation.setParams({
-          cat: "Movies",});
       });
       
   }
   
-  clearCache(){
-    return AsyncStorage.setItem("movies", JSON.stringify({}) ).then(()=>{
-      return AsyncStorage.setItem("cat", JSON.stringify({}) );
-    })
+  async clearCache(){
+    if(AsyncStorage==undefined){
+      return true;
+    }
+    await AsyncStorage.setItem("movies", JSON.stringify({}) )
+    return AsyncStorage.setItem("cat", JSON.stringify({}) );
     
 }
   drawerContent = () => {
@@ -74,7 +75,6 @@ class HomeScreen extends React.Component {
         key = {category["name"]}
         onPress={()=>{
           this.setState({cat:category["uri"],openSidMenu:false}); 
-          this.props.navigation.setParams({cat:category["name"]});
           
           }} />
       );
@@ -91,7 +91,7 @@ class HomeScreen extends React.Component {
       </View>
     );
   };
-  toggleOpen = () => {
+  toggleOpen = () => {console.log(!this.state.openSidMenu);
     this.setState({ openSidMenu: !this.state.openSidMenu });
   };
   openModal = () => {
@@ -101,49 +101,48 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate('Settings',{API:this.API});
   };
   componentDidMount(){
-    this.props.navigation.setParams({
-      cat: this.state.cat,
-      toggleOpen  : this.toggleOpen,
-      openModal   : this.openModal,
-      openSettings: this.openSettings,
-     })
+    this.props.navigation.setOptions(this.navigationOptions);
   }
-  static navigationOptions =  ({ navigation  }) => ({
-    headerStyle: header_style.header,
+  navigationOptions ={
+    headerStyle: header_style.header, 
     headerTitle: a=>{
-      const {params = {}} = navigation.state;
       return (
-        <View style={{flex:1,flexDirection:"row"}}>
-          <Icon 
-            style={[buttons_style.button,{marginLeft:10}]}
-            color="#3498db"
-            name="reorder"
-            onPress={ () => params.toggleOpen() }
-            title="Menu"
-          />
-          <Icon
-            style={[buttons_style.button,{color:"#3498db",marginLeft:10}]}
-            name ="wrench"
-            onPress={ () => params.openSettings() }
-            title="Settings"
-          />
-          <Text style={header_style.title_home}>{navigation.getParam("cat")}</Text>
+        <View style={{flex:1}}>
+          <Text style={header_style.title_home}>{this.state.cat}</Text>
         </View>
       )
       },
+    headerLeft: a=>{
+      return (
+        <View style={{flexDirection:"row"}}>
+          <Icon 
+          style={[buttons_style.button,{marginLeft:10}]}
+          color="#3498db"
+          name="reorder"
+          onPress={ () => this.toggleOpen() }
+          title="Menu"
+        />
+        <Icon
+          style={[buttons_style.button,{color:"#3498db",marginLeft:10}]}
+          name ="wrench"
+          onPress={ () => this.openSettings() }
+          title="Settings"
+        />
+      </View>
+      );
+    },
     headerRight: a=>{
-      const {params = {}} = navigation.state;
       return (
           <Icon
             style={[buttons_style.button,{marginRight:10}]}
 
             name = "search"
-            onPress={ () => params.openModal() }
+            onPress={ () => this.openModal() }
             title="Search"
           />
       )
       },
-  });
+  };
   modal(){
     if(this.API.isWeb){
       return null;
@@ -185,8 +184,9 @@ class HomeScreen extends React.Component {
     render() {
       
       return (
-        <View >
+        <View style={{flex:1}}>
           {this.modal()}
+          <MoviesListview API={this.API} cat={this.state.cat} style={{backgroundColor:"black"}} navigation={this.props.navigation}></MoviesListview>
           <MenuDrawer 
             open={this.state.openSidMenu} 
             drawerContent={this.drawerContent()}
@@ -196,10 +196,7 @@ class HomeScreen extends React.Component {
             opacity={0.4}
             >
           </MenuDrawer>
-          
-          <ScrollView >
-            <MoviesListview API={this.API} cat={this.state.cat} style={{backgroundColor:"black"}} ></MoviesListview>
-          </ScrollView>
+
         </View>
       );
     }
@@ -209,12 +206,9 @@ class HomeScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 30,
-    zIndex: 0
+    //flex: 1,
+    backgroundColor: "#red",
+    width:100,height:100
   },
   animatedBox: {
     flex: 1,

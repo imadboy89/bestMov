@@ -12,6 +12,8 @@
     "deploy": "gh-pages -d web-build"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.12.1",
+    "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.12.8",
     "expo": "^40.0.0",
     "react": "16.13.1",
@@ -19,14 +21,19 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
     "react-native-dom-parser": "^1.5.3",
     "react-native-gesture-handler": "~1.8.0",
-    "react-native-side-drawer": "^1.2.1",
+    "react-native-side-drawer": "^1.2.8",
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "~0.13.12",
-    "@react-navigation/native": "^5.7.3"
+    "react-native-webview": "^11.0.2",
+    "webpack": "^5.10.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "8.3.0",
-    "gh-pages": "^2.1.1"
+    "@babel/core": "~7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@expo/webpack-config": "^0.12.51",
+    "gh-pages": "^3.1.0",
+    "terser-webpack-plugin": "^5.0.3",
+    "webpack-cli": "^4.2.0"
   },
   "private": true
 }

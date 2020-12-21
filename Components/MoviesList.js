@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button,View, Text, StyleSheet, ImageBackground , FlatList, TouchableHighlight} from 'react-native';
-import { withNavigation } from 'react-navigation';
+//import { withNavigation } from 'react-navigation';
 import loader from "../Components/Loader"
 import MoviesAPI from "../Libs/MoviesAPI"
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
         marginLeft:20,
         marginRight:20,
         height:300,
-        
         //backgroundColor: '#a4ccf3',
         backgroundColor: "black"
     },
@@ -73,7 +72,7 @@ class MovieRow_ extends React.Component {
       }
     
     }
-    export const MovieRow = withNavigation(MovieRow_);
+    export const MovieRow = MovieRow_;
 
 
     class MoviesListview extends React.Component {
@@ -194,6 +193,59 @@ class MovieRow_ extends React.Component {
             this.setState({downloaded:downloaded});
 
           };
+        navbtns=()=>{
+            return (                <View style={{flex: 1,flexDirection:"row",justifyContent: 'center',marginBottom: 36}}>
+            {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
+                <Icon.Button name="backward"
+                    title=">"
+                    style={{backgroundColor:"green"}}
+                    onPress={o => {
+                        this.state.page = this.state.page>5 ? this.state.page-5 : 0;
+                        this.setState({"mlist":false});
+                        this.getMoviesList(this.props.cat);
+                    }}
+                /> 
+            }
+            <View style={{width:7}}></View>
+            {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
+                <Icon.Button name="chevron-left"
+                    style={{backgroundColor:"green"}}
+                    title="<"
+                    disabled={this.state.page<=1 || this.state.mlist.length==0 || this.state.mlist==false}
+                    onPress={o => {
+                    this.state.page -= 1;
+                    this.setState({"mlist":false});
+                    this.getMoviesList(this.props.cat);
+                    }}
+                />
+            }
+                <Text style={{width:30,color:"yellow",textAlign:"center",fontSize:14}}>{this.state.page}</Text>
+
+                <Icon.Button name="chevron-right"
+                    title=">"
+                    style={{backgroundColor:"green"}}
+                    disabled={this.state.mlist.length==0 || this.state.mlist==false}
+                    onPress={o => {
+                        this.state.page += 1;
+                        this.setState({"mlist":false});
+                        this.getMoviesList(this.props.cat);
+                    }}
+                /> 
+                <View style={{width:7}}></View>
+                {this.state.mlist!=false && this.state.mlist.length>0 &&
+                    <Icon.Button name="forward"
+                        title=">"
+                        style={{backgroundColor:"green"}}
+                        onPress={o => {
+                            this.state.page += 5;
+                            this.setState({"mlist":false});
+                            this.getMoviesList(this.props.cat);
+                        }}
+                    /> 
+                }
+
+                </View>);
+        }
         render() {
             if(this.cat != this.props.cat){
                 this.state.mlist = false;
@@ -209,86 +261,35 @@ class MovieRow_ extends React.Component {
             }else if(this.state.mlist.length>0){
                 moviesList = (
                     <FlatList
-                            data={this.state.mlist}
-                            renderItem={({ item }) => <MovieRow
-                                movie={item}
-                                isWatched={
-                                    this.state.downloaded && typeof this.state.downloaded == "object" && 
-                                    item.link && item.link.split && 
-                                    item.link.match(/\/?([^\?]+)/i) && 
-                                    item.link.match(/\/?([^\?]+)/i).length>=2 &&
-                                    this.state.downloaded.indexOf(item.link.match(/\/?([^\?]+)/i)[1] )==-1
-                                    ? false : true
-                                }
-                            />}
-                            keyExtractor={ (item,i) => {
-                                if(!item){return i+"";}
-                                return item.link ? item.link : i+"" ;
-                              } }
-                        />
+                        ListFooterComponent={this.navbtns}
+                        data={this.state.mlist}
+                        renderItem={({ item }) => 
+                            <MovieRow
+                            navigation={this.props.navigation}
+                            movie={item}
+                            isWatched={
+                                this.state.downloaded && typeof this.state.downloaded == "object" && 
+                                item.link && item.link.split && 
+                                item.link.match(/\/?([^\?]+)/i) && 
+                                item.link.match(/\/?([^\?]+)/i).length>=2 &&
+                                this.state.downloaded.indexOf(item.link.match(/\/?([^\?]+)/i)[1] )==-1
+                                ? false : true
+                            }
+                        />}
+                        keyExtractor={ (item,i) => {
+                            if(!item){return i+"";}
+                            return item.link ? item.link : i+"" ;
+                            } }
+                    />
                 );
             }
             return (
-                <View  style={{backgroundColor:"black"}}>
-
+                <View  style={{backgroundColor:"black",flex:1,height:"100%"}}>
                     {moviesList}
-                    <Text>  </Text>
-
-                <View style={{flex: 1,flexDirection:"row",justifyContent: 'center',marginBottom: 36}}>
-                {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
-                    <Icon.Button name="backward"
-                        title=">"
-                        style={{backgroundColor:"green"}}
-                        onPress={o => {
-                            this.state.page = this.state.page>5 ? this.state.page-5 : 0;
-                            this.setState({"mlist":false});
-                            this.getMoviesList(this.props.cat);
-                        }}
-                    /> 
-                }
-                <View style={{width:7}}></View>
-                {this.state.page>1 && this.state.mlist!=false  && this.state.mlist.length>0 &&
-                    <Icon.Button name="chevron-left"
-                        style={{backgroundColor:"green"}}
-                        title="<"
-                        disabled={this.state.page<=1 || this.state.mlist.length==0 || this.state.mlist==false}
-                        onPress={o => {
-                        this.state.page -= 1;
-                        this.setState({"mlist":false});
-                        this.getMoviesList(this.props.cat);
-                        }}
-                    />
-                }
-                    <Text style={{width:30,color:"yellow",textAlign:"center",fontSize:14}}>{this.state.page}</Text>
-
-                    <Icon.Button name="chevron-right"
-                        title=">"
-                        style={{backgroundColor:"green"}}
-                        disabled={this.state.mlist.length==0 || this.state.mlist==false}
-                        onPress={o => {
-                            this.state.page += 1;
-                            this.setState({"mlist":false});
-                            this.getMoviesList(this.props.cat);
-                        }}
-                    /> 
-                    <View style={{width:7}}></View>
-                    {this.state.mlist!=false && this.state.mlist.length>0 &&
-                        <Icon.Button name="forward"
-                            title=">"
-                            style={{backgroundColor:"green"}}
-                            onPress={o => {
-                                this.state.page += 5;
-                                this.setState({"mlist":false});
-                                this.getMoviesList(this.props.cat);
-                            }}
-                        /> 
-                    }
-
-                    </View>
                 </View>
                     );
             }
         }
     
 
-export default withNavigation(MoviesListview);
+export default MoviesListview;
