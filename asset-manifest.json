@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/bestMov/static/js/app.20bbd6d0.chunk.js",
-    "app.js.map": "/bestMov/static/js/app.20bbd6d0.chunk.js.map",
+    "app.js": "/bestMov/static/js/app.1027a2af.chunk.js",
+    "app.js.map": "/bestMov/static/js/app.1027a2af.chunk.js.map",
     "runtime~app.js": "/bestMov/static/js/runtime~app.81365a60.js",
     "runtime~app.js.map": "/bestMov/static/js/runtime~app.81365a60.js.map",
-    "static/js/2.bf707f77.chunk.js": "/bestMov/static/js/2.bf707f77.chunk.js",
-    "static/js/2.bf707f77.chunk.js.map": "/bestMov/static/js/2.bf707f77.chunk.js.map",
+    "static/js/2.68956ad6.chunk.js": "/bestMov/static/js/2.68956ad6.chunk.js",
+    "static/js/2.68956ad6.chunk.js.map": "/bestMov/static/js/2.68956ad6.chunk.js.map",
     "fonts/FontAwesome.ttf": "/bestMov/./fonts/FontAwesome.ttf",
     "favicon-16.png": "/bestMov/favicon-16.png",
     "favicon-32.png": "/bestMov/favicon-32.png",
@@ -13,11 +13,11 @@
     "index.html": "/bestMov/index.html",
     "manifest.json": "/bestMov/manifest.json",
     "serve.json": "/bestMov/serve.json",
-    "static/js/2.bf707f77.chunk.js.LICENSE.txt": "/bestMov/static/js/2.bf707f77.chunk.js.LICENSE.txt"
+    "static/js/2.68956ad6.chunk.js.LICENSE.txt": "/bestMov/static/js/2.68956ad6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime~app.81365a60.js",
-    "static/js/2.bf707f77.chunk.js",
-    "static/js/app.20bbd6d0.chunk.js"
+    "static/js/2.68956ad6.chunk.js",
+    "static/js/app.1027a2af.chunk.js"
   ]
 }
